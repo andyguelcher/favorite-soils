@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Favorite Soils Report | ENSC 245</title>
+  <meta name="description" content="A group field guide to three favorite soils and their water, for ENSC 245.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Young+Serif&display=swap">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <!-- MASTHEAD: the same on every page. To rename a soil page in the menu,
+       change the link text here on all five pages. -->
+  <header class="masthead">
+    <a class="site" href="index.html">Favorite Soils Report <span>ENSC 245</span></a>
+    <nav aria-label="Site">
+      <ul>
+        <li><a href="index.html" aria-current="page">Home</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="wauseon.html">Wauseon</a></li>
+        <li><a href="soil-2.html">Soil 2</a></li>
+        <li><a href="soil-3.html">Soil 3</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <div class="opener">
+      <h1>Three soils, and where their <em>water</em> goes</h1>
+      <p class="lede">A field guide to our group's favorite soils, compared by how each one holds, moves and loses water.</p>
+    </div>
+
+    <section aria-labelledby="profiles">
+      <h2 id="profiles">The profiles, on one depth scale</h2>
+      <p>Each column is a soil drawn to the same scale, coloured from its moist Munsell colours. Choose one to open its page.</p>
+      <!-- These drawings are built from js/soils.js. Edit that file, not this one. -->
+      <div class="cores" data-cores></div>
+    </section>
+
+    <section aria-labelledby="where">
+      <h2 id="where">Where they are</h2>
+      <div class="map">
+        <!-- MAP: follow steps 4a to 4e in the FSR cookbook to make a Google My Maps
+             map with a marker for each soil, choose "Embed on my site", then
+             replace the whole <div class="todo"> below with the <iframe ...></iframe>
+             code Google gives you. -->
+        <div class="todo">
+          <p><strong>Map to add.</strong> Paste the Google My Maps embed code here, with one marker per soil named after its series. Instructions are in a comment in <code>index.html</code>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="group">
+      <h2 id="group">About this group</h2>
+      <div class="todo">
+        <p><strong>To write.</strong> Two or three sentences: who is in the group, which lab section, and what the three soils have in common or how they differ.</p>
+      </div>
+      <p>Each soil has its own page with its DRoCTS+ table and water comparisons. Our plant-available water and annual water budget posts are on the <a href="blog.html">blog</a>.</p>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    Favorite Soils Report 2, ENSC 245. Soil data from USDA-NRCS Official Series Descriptions and UC Davis SoilWeb unless noted.
+  </footer>
+
+  <script src="js/soils.js"></script>
+  <script src="js/site.js"></script>
+</body>
+</html>
