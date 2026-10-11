@@ -4,22 +4,22 @@ Live site: https://andyguelcher.github.io/favorite-soils/
 
 You never touch any code. Everything you write goes in **your own folder** as plain text, and the site updates itself about a minute after you save.
 
-| If you are | Your folder is |
-| --- | --- |
-| Andy | `content/andy` |
-| Partner 2 | `content/partner-2` |
-| Partner 3 | `content/partner-3` |
+|If you are|Your folder is|
+|-|-|
+|Andy|`content/andy`|
+|Partner 2|`content/amelie`|
+|Partner 3|`content/catherine`|
 
 Andy will tell you which one is yours. Stay inside it and you can't break anyone else's page.
 
 ## Your four files
 
-| File | What goes in it |
-| --- | --- |
-| `soil.txt` | Your soil's name, your name, and its horizons. This draws your soil profile. |
-| `page.md` | Your soil page: DRoCTS+ table, the rubric you scored, your water comparisons, sources. |
-| `blog-1.md` | Blog post 1: plant-available water. |
-| `blog-2.md` | Blog post 2: annual water budget. |
+|File|What goes in it|
+|-|-|
+|`soil.txt`|Your soil's name, your name, and its horizons. This draws your soil profile.|
+|`page.md`|Your soil page: DRoCTS+ table, the rubric you scored, your water comparisons, sources.|
+|`blog-1.md`|Blog post 1: plant-available water.|
+|`blog-2.md`|Blog post 2: annual water budget.|
 
 ## How to edit a file
 
@@ -35,8 +35,8 @@ Andy will tell you which one is yours. Stay inside it and you can't break anyone
 2. Drag your picture in and click **Commit changes**. Simple file names work best, like `water-budget.png`.
 3. In `page.md` or a blog file, put this on its own line where the picture should go:
 
-   ```
-   ![Caption that describes the picture](water-budget.png)
+```
+   !\[Caption that describes the picture](water-budget.png)
    ```
 
 ## Filling in soil.txt
@@ -57,16 +57,16 @@ Bg1, 33, 53, 10YR 4/1
 
 ## Formatting cheat sheet
 
-| To get | Type |
-| --- | --- |
-| A new paragraph | Leave a blank line |
-| A section heading | `## Heading` (on a soil page) or `### Heading` (inside a blog post) |
-| **Bold** | `**bold**` |
-| *Italic* | `*italic*` |
-| A link | `[words to click](https://example.com)` |
-| A bullet list | Start each line with `- ` |
-| A numbered list | Start each line with `1. `, `2. ` and so on |
-| A blog post title | Make the first line `# Your title` |
+|To get|Type|
+|-|-|
+|A new paragraph|Leave a blank line|
+|A section heading|`## Heading` (on a soil page) or `### Heading` (inside a blog post)|
+|**Bold**|`\*\*bold\*\*`|
+|*Italic*|`\*italic\*`|
+|A link|`\[words to click](https://example.com)`|
+|A bullet list|Start each line with `- `|
+|A numbered list|Start each line with `1. `, `2. ` and so on|
+|A blog post title|Make the first line `# Your title`|
 
 A table is rows of cells separated by `|`, with a dashed line under the header:
 
@@ -81,9 +81,10 @@ Look at `content/andy/page.md` for a finished example to copy from.
 
 ## The group parts
 
-- `content/group/about.md` is the short "About this group" text on the home page.
-- `content/group/map.txt` is where the Google My Maps embed code gets pasted (cookbook step 4).
+* `content/group/about.md` is the short "About this group" text on the home page.
+* `content/group/map.txt` is where the Google My Maps embed code gets pasted (cookbook step 4).
 
 ## If something looks wrong
 
 Every save is kept. Tell Andy and he can undo it from the repository's history.
+

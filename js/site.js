@@ -6,8 +6,8 @@
 (function () {
   var PEOPLE = [
     { folder: "andy", page: "wauseon.html", fallback: "Soil 1" },
-    { folder: "partner-2", page: "soil-2.html", fallback: "Soil 2" },
-    { folder: "partner-3", page: "soil-3.html", fallback: "Soil 3" }
+    { folder: "amelie", page: "soil-2.html", fallback: "Soil 2" },
+    { folder: "catherine", page: "soil-3.html", fallback: "Soil 3" }
   ];
   var IN = 2.54;
 
