@@ -69,6 +69,8 @@
   }
   function inline(s) {
     return esc(s)
+      // A picture line inside a sentence (as in the TO DO hints) is shown as code to copy.
+      .replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, "<code>!&#91;$1&#93;&#40;$2&#41;</code>")
       .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2">$1</a>')
       .replace(/(^|[\s(])(https?:\/\/[^\s<)]+)/g, '$1<a href="$2">$2</a>')
       .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
