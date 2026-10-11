@@ -150,10 +150,12 @@ dl.taxa dt { font-family: var(--label); font-size: 0.8125rem; font-weight: 600; 
 dl.taxa dd { margin: 0; }
 
 .table-wrap { overflow-x: auto; margin: 0 0 1rem; border: 1.5px solid var(--ink); background: var(--sheet); }
-table.drocts { border-collapse: collapse; width: 100%; min-width: 40rem; font-family: var(--data); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+table.drocts.wide { min-width: 40rem; }
+table.drocts.wide th, table.drocts.wide td { white-space: nowrap; }
+table.drocts { border-collapse: collapse; width: 100%; font-family: var(--data); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
 table.drocts caption { caption-side: top; text-align: left; padding: 0.8rem 0.9rem; font-family: var(--label); font-size: 0.875rem; color: var(--ink-soft); border-bottom: 1px solid var(--rule); }
 table.drocts caption strong { color: var(--ink); }
-table.drocts th, table.drocts td { padding: 0.5rem 0.9rem; text-align: left; white-space: nowrap; }
+table.drocts th, table.drocts td { padding: 0.5rem 0.9rem; text-align: left; vertical-align: top; }
 table.drocts thead th { font-family: var(--label); font-size: 0.75rem; font-weight: 600; color: var(--ink-soft); border-bottom: 1.5px solid var(--ink); vertical-align: bottom; }
 table.drocts thead th small { display: block; font-weight: 400; }
 table.drocts tbody tr { border-top: 1px solid var(--rule); transition: background-color 160ms ease-out; cursor: default; }
@@ -164,11 +166,17 @@ table.drocts tbody tr:hover, table.drocts tbody tr.is-on { background: var(--wat
 .notes { font-family: var(--label); font-size: 0.8125rem; line-height: 1.55; color: var(--ink-soft); max-width: var(--measure); }
 .notes p { margin-bottom: 0.4em; }
 
-figure.plate { margin: 1.5rem 0 0; }
+figure.plate { margin: 1.5rem 0; }
+[data-body] > section:first-child { padding-top: 0; }
+[data-body] ul, [data-about] ul, article.post ul { max-width: var(--measure); padding-left: 1.2rem; }
+[data-body] h3, article.post h3 { margin: 1.5rem 0 0.5rem; }
+article.post header h3 { margin: 0; font-size: 1.5rem; }
+.table-wrap { max-width: 100%; }
+.table-wrap + p, .table-wrap + .notes { margin-top: 1rem; }
 figure.plate img { border: 1.5px solid var(--ink); background: var(--sheet); width: 100%; }
 figure.plate figcaption { font-family: var(--label); font-size: 0.8125rem; line-height: 1.45; color: var(--ink-soft); margin-top: 0.55rem; max-width: var(--measure); }
 
-ol.story { margin: 1.25rem 0 0; padding: 0; list-style: none; counter-reset: step; max-width: var(--measure); }
+ol.story { margin: 1.25rem 0 1.25rem; padding: 0; list-style: none; counter-reset: step; max-width: var(--measure); }
 ol.story li { counter-increment: step; display: grid; grid-template-columns: 2rem 1fr; gap: 0.25rem; padding: 0.55rem 0; border-top: 1px solid var(--rule); }
 ol.story li::before { content: counter(step); font-family: var(--data); font-size: 0.8125rem; color: var(--ink-soft); padding-top: 0.25em; }
 

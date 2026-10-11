@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Soil 3 | Favorite Soils Report</title>
+  <title>Favorite Soils Report</title>
   <meta name="description" content="A group field guide to three favorite soils and their water, for ENSC 245.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,102 +11,50 @@
   <link rel="stylesheet" href="css/site.css">
 </head>
 <body>
+  <!-- You do not need to edit this file. The writing lives in the "content" folder. See README.md. -->
   <a class="skip" href="#main">Skip to content</a>
-
-  <!-- MASTHEAD: the same on every page. To rename a soil page in the menu,
-       change the link text here on all five pages. -->
   <header class="masthead">
     <a class="site" href="index.html">Favorite Soils Report <span>ENSC 245</span></a>
     <nav aria-label="Site">
       <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="blog.html">Blog</a></li>
-        <li><a href="wauseon.html">Wauseon</a></li>
+        <li><a href="wauseon.html">Soil 1</a></li>
         <li><a href="soil-2.html">Soil 2</a></li>
         <li><a href="soil-3.html" aria-current="page">Soil 3</a></li>
       </ul>
     </nav>
   </header>
 
-  <main id="main">
-
+  <main id="main" data-person="partner-3">
     <div class="opener">
-      <!-- Replace "Soil 3" with your series name, here and in the <title> at the top. -->
-      <h1>Soil 3</h1>
-      <p class="lede">This page is waiting for its soil. Add your name and one sentence on what kind of soil this is.</p>
+      <h1 data-title>&nbsp;</h1>
+      <p class="lede" data-lede>&nbsp;</p>
     </div>
 
     <div class="soil">
       <aside class="rail" aria-label="Soil profile">
         <figure>
-          <!-- The drawing appears once you add your horizons to js/soils.js -->
-          <div class="wrap" data-core="soil-3"></div>
+          <div class="wrap" data-core></div>
           <div class="readout" data-readout aria-live="polite"></div>
-          <figcaption>Profile to scale, depths in cm.</figcaption>
+          <figcaption>Profile to scale, depths in cm. Colours are screen approximations of the moist Munsell colours.</figcaption>
         </figure>
       </aside>
 
       <div class="column">
-        <section aria-labelledby="class" style="padding-top:0">
-          <h2 id="class">Classification</h2>
-          <div class="todo">
-            <p><strong>To add.</strong> Series, order, suborder, great group, subgroup and family. Copy the <code>&lt;dl class="taxa"&gt;</code> block from <code>wauseon.html</code> and change the values.</p>
-          </div>
-        </section>
-
-        <section aria-labelledby="drocts">
-          <h2 id="drocts">DRoCTS+ table</h2>
-          <div class="todo">
-            <p><strong>To add.</strong> Your DRoCTS+ table.</p>
-            <ul>
-              <li>Quickest: save your screenshot into <code>assets</code> and show it with a <code>&lt;figure class="plate"&gt;</code>.</li>
-              <li>Better: also copy the typed table from <code>wauseon.html</code> and replace the rows. Give each row <code>data-hz="Ap"</code> (your horizon name) and it will light up with the drawing.</li>
-            </ul>
-          </div>
-        </section>
-
-        <section aria-labelledby="scored">
-          <h2 id="scored">A groupmate's table, scored</h2>
-          <div class="todo">
-            <p><strong>To add.</strong> A screenshot of the DRoCTS+ rubric filled out for one groupmate's table.</p>
-          </div>
-        </section>
-
-        <section aria-labelledby="budget">
-          <h2 id="budget">Annual water budget, compared</h2>
-          <div class="todo">
-            <p><strong>To write (individual).</strong> Compare this soil's water balance with one groupmate's: which of surplus, use, recharge and deficit each has, how much, and why they differ.</p>
-          </div>
-        </section>
-
-        <section aria-labelledby="second">
-          <h2 id="second">Second comparison</h2>
-          <div class="todo">
-            <p><strong>To write (group picks one).</strong> Plant-available water, physical properties and water holding, wind and water erosion, role in the hydrologic cycle, or land use and management.</p>
-          </div>
-        </section>
-
-        <section aria-labelledby="sources">
-          <h2 id="sources">Sources</h2>
-          <div class="todo">
-            <p><strong>To add.</strong> A citation for every picture and data source on this page.</p>
-          </div>
-        </section>
-
+        <div data-body></div>
         <nav class="pager" aria-label="Soil pages">
           <a href="soil-2.html">Previous soil</a>
           <a href="blog.html">On to the blog</a>
         </nav>
       </div>
     </div>
-
   </main>
 
   <footer class="footer">
     Favorite Soils Report 2, ENSC 245. Soil data from USDA-NRCS Official Series Descriptions and UC Davis SoilWeb unless noted.
   </footer>
-
-  <script src="js/soils.js"></script>
+  <noscript><p style="padding:1rem">This site needs JavaScript turned on to show its content.</p></noscript>
   <script src="js/site.js"></script>
 </body>
 </html>

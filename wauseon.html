@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Wauseon | Favorite Soils Report</title>
+  <title>Favorite Soils Report</title>
   <meta name="description" content="A group field guide to three favorite soils and their water, for ENSC 245.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,161 +11,50 @@
   <link rel="stylesheet" href="css/site.css">
 </head>
 <body>
+  <!-- You do not need to edit this file. The writing lives in the "content" folder. See README.md. -->
   <a class="skip" href="#main">Skip to content</a>
-
-  <!-- MASTHEAD: the same on every page. To rename a soil page in the menu,
-       change the link text here on all five pages. -->
   <header class="masthead">
     <a class="site" href="index.html">Favorite Soils Report <span>ENSC 245</span></a>
     <nav aria-label="Site">
       <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="blog.html">Blog</a></li>
-        <li><a href="wauseon.html" aria-current="page">Wauseon</a></li>
+        <li><a href="wauseon.html" aria-current="page">Soil 1</a></li>
         <li><a href="soil-2.html">Soil 2</a></li>
         <li><a href="soil-3.html">Soil 3</a></li>
       </ul>
     </nav>
   </header>
 
-  <main id="main">
-
+  <main id="main" data-person="andy">
     <div class="opener">
-      <h1>Wauseon</h1>
-      <p class="lede">Andy Guelcher's favorite soil: a dark, poorly drained Mollisol of sandy water-laid sediment over clay loam glacial till.</p>
+      <h1 data-title>&nbsp;</h1>
+      <p class="lede" data-lede>&nbsp;</p>
     </div>
 
     <div class="soil">
-      <aside class="rail" aria-label="Wauseon soil profile">
+      <aside class="rail" aria-label="Soil profile">
         <figure>
-          <div class="wrap" data-core="wauseon"></div>
+          <div class="wrap" data-core></div>
           <div class="readout" data-readout aria-live="polite"></div>
           <figcaption>Profile to scale, depths in cm. Colours are screen approximations of the moist Munsell colours.</figcaption>
         </figure>
       </aside>
 
       <div class="column">
-        <section aria-labelledby="class" style="padding-top:0">
-          <h2 id="class">Classification</h2>
-          <dl class="taxa">
-            <dt>Series</dt><dd>Wauseon</dd>
-            <dt>Order</dt><dd>Mollisols</dd>
-            <dt>Suborder</dt><dd>Aquolls</dd>
-            <dt>Great group</dt><dd>Epiaquolls</dd>
-            <dt>Subgroup</dt><dd>Typic Epiaquolls</dd>
-            <dt>Family</dt><dd>Coarse-loamy over clayey, mixed over illitic, superactive, mesic Typic Epiaquolls</dd>
-          </dl>
-        </section>
-
-        <section aria-labelledby="drocts">
-          <h2 id="drocts">DRoCTS+ table</h2>
-          <div class="table-wrap">
-            <table class="drocts">
-              <caption><strong>Wauseon series</strong>, Typic Epiaquolls. Table by Andy Guelcher.</caption>
-              <thead>
-                <tr>
-                  <th scope="col">Horizon</th>
-                  <th scope="col">Depth <small>in</small></th>
-                  <th scope="col">Rocks <small>%</small></th>
-                  <th scope="col">Color <small>moist</small></th>
-                  <th scope="col">Texture</th>
-                  <th scope="col">Structure</th>
-                  <th scope="col">HCl <small>effervescence</small></th>
-                  <th scope="col">pH</th>
-                </tr>
-              </thead>
-              <tbody>
-              <tr data-hz="Ap"><th scope="row">Ap</th><td>0–9</td><td>0</td><td><span class="chip" style="background:#37312c"></span>10YR 2/1</td><td>fsl</td><td>sbk</td><td>ne</td><td>6.1–6.5</td></tr>
-              <tr data-hz="A"><th scope="row">A</th><td>9–13</td><td>0</td><td><span class="chip" style="background:#3b342e"></span>10YR 2/1</td><td>fsl</td><td>sbk</td><td>ne</td><td>6.1–6.5</td></tr>
-              <tr data-hz="Bg1"><th scope="row">Bg1</th><td>13–21</td><td>0</td><td><span class="chip" style="background:#6b635b"></span>10YR 4/1</td><td>fsl</td><td>sbk</td><td>ne</td><td>6.1–6.5</td></tr>
-              <tr data-hz="Bg2"><th scope="row">Bg2</th><td>21–28</td><td>1</td><td><span class="chip" style="background:#6f675e"></span>10YR 4/1</td><td>fsl</td><td>sbk</td><td>ne</td><td>7.4–7.8</td></tr>
-              <tr data-hz="Bg3"><th scope="row">Bg3</th><td>28–32</td><td>0</td><td><span class="chip" style="background:#6a6259"></span>10YR 4/1</td><td>scl</td><td>sbk</td><td>sc</td><td>7.4–7.8</td></tr>
-              <tr data-hz="2BC"><th scope="row">2BC</th><td>32–36</td><td>5</td><td><span class="chip" style="background:#7a5f37"></span>10YR 4/4</td><td>cl</td><td>pr</td><td>ve</td><td>7.4–7.8</td></tr>
-              <tr data-hz="2C"><th scope="row">2C</th><td>36–58</td><td>5</td><td><span class="chip" style="background:#746042"></span>10YR 4/3</td><td>cl</td><td>ma</td><td>ve</td><td>7.9–8.4</td></tr>
-              <tr data-hz="2Cd"><th scope="row">2Cd</th><td>58–80</td><td>5</td><td><span class="chip" style="background:#6d5a3e"></span>10YR 4/3</td><td>cl</td><td>ma</td><td>ve</td><td>7.9–8.4</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="notes">
-            <p>Texture: fsl, fine sandy loam; scl, sandy clay loam; cl, clay loam. Structure: sbk, subangular blocky; pr, prismatic; ma, massive.</p>
-            <p>Depths converted from centimetres to inches. pH ranges estimated from the reaction classes in the series description using the lab manual chart.</p>
-          </div>
-          <figure class="plate">
-            <img src="assets/wauseon-drocts-table.jpg" alt="Handwritten DRoCTS+ table for the Wauseon series, listing eight horizons from Ap to 2Cd with depth, rocks, color, texture, structure, HCl effervescence and pH." loading="lazy" width="1252" height="1142">
-            <figcaption>The table as submitted for FSR 1.</figcaption>
-          </figure>
-        </section>
-
-        <section aria-labelledby="scored">
-          <h2 id="scored">A groupmate's table, scored</h2>
-          <div class="todo">
-            <p><strong>To add.</strong> A screenshot of the DRoCTS+ rubric filled out for one groupmate's table.</p>
-            <ul>
-              <li>Save the screenshot into the <code>assets</code> folder.</li>
-              <li>Replace this box with a <code>&lt;figure class="plate"&gt;</code> like the one above, and say whose table it is in the caption.</li>
-            </ul>
-          </div>
-        </section>
-
-        <section aria-labelledby="formed">
-          <h2 id="formed">How it formed</h2>
-          <figure class="plate" style="margin-top:0">
-            <img src="assets/wauseon-evolution-diagram.jpg" alt="Hand-drawn evolution diagram showing the Wauseon profile developing in five frames, from a single block of clay loam glacial till to the present Ap, A, Bg1, Bg2, Bg3, 2BC, 2C, 2Cd profile." loading="lazy" width="1835" height="1217">
-            <figcaption>Evolution diagram by Andy Guelcher, from FSR 1.</figcaption>
-          </figure>
-          <ol class="story">
-            <li>A retreating glacier leaves clay loam till, the parent material at the base of the profile.</li>
-            <li>A lake or river lays sandy sediment over the till, giving the soil its second parent material.</li>
-            <li>Plants add organic matter at the surface and an A horizon builds while the sediment beneath begins to weather.</li>
-            <li>Poor drainage keeps the subsoil wet. Redox by iron-reducing microbes greys the Bg horizons, more so with depth.</li>
-            <li>Plowing mixes the top of the A into an Ap, and the lower till is densified into 2Cd beneath the wet soil above.</li>
-          </ol>
-        </section>
-
-        <section aria-labelledby="budget">
-          <h2 id="budget">Annual water budget, compared</h2>
-          <div class="todo">
-            <p><strong>To write (individual, 30 of the 50 report points).</strong> Compare this soil's water balance with one groupmate's.</p>
-            <ul>
-              <li>Both abSURD graphs, or a link to them on the blog.</li>
-              <li>Which of surplus, use, recharge and deficit each soil has, and how much of each.</li>
-              <li>Why they differ.</li>
-            </ul>
-          </div>
-        </section>
-
-        <section aria-labelledby="second">
-          <h2 id="second">Second comparison</h2>
-          <div class="todo">
-            <p><strong>To write (group picks one).</strong> Plant-available water, physical properties and water holding, wind and water erosion, role in the hydrologic cycle, or land use and management.</p>
-          </div>
-        </section>
-
-        <section aria-labelledby="sources">
-          <h2 id="sources">Sources</h2>
-          <ul>
-            <li>Soil Survey Staff, USDA-NRCS. Official Soil Series Descriptions: Wauseon series.</li>
-            <li>California Soil Resource Lab, UC Davis. <a href="https://casoilresource.lawr.ucdavis.edu/gmap/">SoilWeb</a>.</li>
-          </ul>
-          <div class="todo">
-            <p><strong>To finish.</strong> Add access dates, and a citation for every picture and data source used above.</p>
-          </div>
-        </section>
-
+        <div data-body></div>
         <nav class="pager" aria-label="Soil pages">
           <a href="index.html">All three soils</a>
           <a href="soil-2.html">Next soil</a>
         </nav>
       </div>
     </div>
-
   </main>
 
   <footer class="footer">
     Favorite Soils Report 2, ENSC 245. Soil data from USDA-NRCS Official Series Descriptions and UC Davis SoilWeb unless noted.
   </footer>
-
-  <script src="js/soils.js"></script>
+  <noscript><p style="padding:1rem">This site needs JavaScript turned on to show its content.</p></noscript>
   <script src="js/site.js"></script>
 </body>
 </html>

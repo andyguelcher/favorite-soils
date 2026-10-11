@@ -1,0 +1,14 @@
+Series: Wauseon
+Name: Andy Guelcher
+Subgroup: Typic Epiaquolls
+Summary: A dark, poorly drained Mollisol of sandy water-laid sediment over clay loam glacial till.
+
+Horizons (name, top in cm, bottom in cm, moist color)
+Ap, 0, 23, 10YR 2/1
+A, 23, 33, 10YR 2/1
+Bg1, 33, 53, 10YR 4/1
+Bg2, 53, 71, 10YR 4/1
+Bg3, 71, 81, 10YR 4/1
+2BC, 81, 91, 10YR 4/4
+2C, 91, 147, 10YR 4/3
+2Cd, 147, 203, 10YR 4/3

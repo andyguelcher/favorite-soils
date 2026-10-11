@@ -1,36 +1,89 @@
-# Favorite Soils Report site (ENSC 245)
+# How to add your part of the soil site
 
-A plain HTML site for GitHub Pages. There is nothing to install or build: edit a file, commit, and the live site updates in about a minute.
+Live site: https://andyguelcher.github.io/favorite-soils/
 
-## Pages
+You never touch any code. Everything you write goes in **your own folder** as plain text, and the site updates itself about a minute after you save.
 
-| File | What it is |
+| If you are | Your folder is |
 | --- | --- |
-| `index.html` | Home: the three soil profiles and the group map |
-| `blog.html` | Blog posts 1 (plant-available water) and 2 (annual water budget) |
-| `wauseon.html` | Andy's soil page |
-| `soil-2.html`, `soil-3.html` | Pages waiting for the other two team members |
-| `js/soils.js` | The horizon data that draws the soil profiles |
-| `assets/` | Pictures |
+| Andy | `content/andy` |
+| Partner 2 | `content/partner-2` |
+| Partner 3 | `content/partner-3` |
 
-## What is left to do
+Andy will tell you which one is yours. Stay inside it and you can't break anyone else's page.
 
-Every dashed red box on the site is something still to add, with a note on what the rubric asks for. Replace the whole `<div class="todo"> ... </div>` with your writing and the box disappears. Search the files for `class="todo"` to find them all.
+## Your four files
 
-## Adding your soil (team members)
+| File | What goes in it |
+| --- | --- |
+| `soil.txt` | Your soil's name, your name, and its horizons. This draws your soil profile. |
+| `page.md` | Your soil page: DRoCTS+ table, the rubric you scored, your water comparisons, sources. |
+| `blog-1.md` | Blog post 1: plant-available water. |
+| `blog-2.md` | Blog post 2: annual water budget. |
 
-1. Open `js/soils.js` and fill in one of the empty entries: series, your name, subgroup, and one line per horizon. The profile drawing then appears on the home page and on your page.
-2. Open your page (`soil-2.html` or `soil-3.html`) and replace "Soil 2" with your series name in the `<title>` and the `<h1>`.
-3. To change the menu label, edit the "Soil 2" link text in the masthead of all five pages.
-4. Put pictures in `assets/` and show them with:
+## How to edit a file
 
-   ```html
-   <figure class="plate">
-     <img src="assets/your-file.jpg" alt="Describe the picture">
-     <figcaption>Caption and citation.</figcaption>
-   </figure>
+1. Open your folder on github.com and click the file.
+2. Click the **pencil** icon at the top right.
+3. Type. Lines that start with `TO DO:` are reminders of what the rubric asks for. Delete each one and write your own text in its place.
+4. Click the green **Commit changes** button, then **Commit changes** again.
+5. Wait a minute and refresh the live site.
+
+## How to add a picture
+
+1. Open your folder, click **Add file**, then **Upload files**.
+2. Drag your picture in and click **Commit changes**. Simple file names work best, like `water-budget.png`.
+3. In `page.md` or a blog file, put this on its own line where the picture should go:
+
+   ```
+   ![Caption that describes the picture](water-budget.png)
    ```
 
-## Editing on github.com
+## Filling in soil.txt
 
-Open a file, choose the pencil icon, make the change, then "Commit changes". To add a picture, open the `assets` folder and use "Add file", then "Upload files".
+Type after each colon, then list your horizons, one per line: name, top depth in cm, bottom depth in cm, moist Munsell colour.
+
+```
+Series: Wauseon
+Name: Andy Guelcher
+Subgroup: Typic Epiaquolls
+Summary: A dark, poorly drained Mollisol of sandy sediment over glacial till.
+
+Horizons (name, top in cm, bottom in cm, moist color)
+Ap, 0, 23, 10YR 2/1
+A, 23, 33, 10YR 2/1
+Bg1, 33, 53, 10YR 4/1
+```
+
+## Formatting cheat sheet
+
+| To get | Type |
+| --- | --- |
+| A new paragraph | Leave a blank line |
+| A section heading | `## Heading` (on a soil page) or `### Heading` (inside a blog post) |
+| **Bold** | `**bold**` |
+| *Italic* | `*italic*` |
+| A link | `[words to click](https://example.com)` |
+| A bullet list | Start each line with `- ` |
+| A numbered list | Start each line with `1. `, `2. ` and so on |
+| A blog post title | Make the first line `# Your title` |
+
+A table is rows of cells separated by `|`, with a dashed line under the header:
+
+```
+| Horizon | Depth (cm) | PAW (cm) |
+| --- | --- | --- |
+| Ap | 23 | 3.1 |
+| A | 10 | 1.2 |
+```
+
+Look at `content/andy/page.md` for a finished example to copy from.
+
+## The group parts
+
+- `content/group/about.md` is the short "About this group" text on the home page.
+- `content/group/map.txt` is where the Google My Maps embed code gets pasted (cookbook step 4).
+
+## If something looks wrong
+
+Every save is kept. Tell Andy and he can undo it from the repository's history.
