@@ -306,17 +306,29 @@
           readout.appendChild(document.createTextNode(hz.munsell + " moist"));
         }
       }
+      // A click (not a hover) picks a horizon; the 3D model in js/soil3d.js listens for it.
+      function pick(name) {
+        show(name);
+        document.dispatchEvent(new CustomEvent("soil:pick", { detail: name }));
+      }
       core.querySelectorAll(".hz").forEach(function (el) {
         el.addEventListener("mouseenter", function () { show(el.dataset.hz); });
         el.addEventListener("focus", function () { show(el.dataset.hz); });
         el.addEventListener("click", function () {
-          show(el.dataset.hz);
+          pick(el.dataset.hz);
           var row = document.querySelector('tr[data-hz="' + el.dataset.hz + '"]');
           if (row) row.scrollIntoView({ block: "center", behavior: "smooth" });
         });
       });
-      rows.forEach(function (r) { r.addEventListener("mouseenter", function () { show(r.dataset.hz); }); });
+      rows.forEach(function (r) {
+        r.addEventListener("mouseenter", function () { show(r.dataset.hz); });
+        r.addEventListener("click", function () { pick(r.dataset.hz); });
+      });
       show(null);
+
+      // Hand the finished page to js/soil3d.js, whichever of the two loads first.
+      window.soilPage = { soil: soil, show: show };
+      document.dispatchEvent(new CustomEvent("soil:page"));
     });
   }
 

@@ -4,17 +4,21 @@
    water blue, because FSR 2 is about where the water goes.
 ------------------------------------------------------------------- */
 :root {
-  --ground: #e8e5dc;      /* dry lakebed silt */
-  --sheet: #f4f2ec;       /* the page a figure sits on */
+  --ground: #d9d9d4;      /* dry lakebed silt, greyed */
+  --sheet: #efeeeb;       /* the page a figure sits on */
   --ink: #1e1a16;         /* 10YR 2/1, nearly */
   --ink-soft: #4d453c;
-  --rule: #bdb6a8;
+  --rule: #b8b5ae;
   --till: #746042;        /* 10YR 4/3 glacial till */
   --gley: #6b635b;        /* 10YR 4/1 gleyed horizons */
   --water: #175a78;
   --water-deep: #0e3f56;
   --water-wash: #d5e3e8;
   --rust: #9a4a22;        /* redox mottles */
+  --rust-text: #843c19;   /* rust, dark enough for small text */
+  --stage: #48443f;       /* behind the 3D model */
+  --stage-edge: #1c1a18;
+  --stage-ink: #d9d6cf;   /* ruler and notes on the dark stage */
 
   --display: "Young Serif", Georgia, serif;
   --read: "Source Serif 4", Georgia, serif;
@@ -186,7 +190,7 @@ ol.story li::before { content: counter(step); font-family: var(--data); font-siz
   padding: 1rem 1.15rem; margin: 0 0 1.25rem; max-width: var(--measure);
   font-family: var(--label); font-size: 0.875rem; line-height: 1.55; color: var(--ink);
 }
-.todo strong { color: var(--rust); font-weight: 700; }
+.todo strong { color: var(--rust-text); font-weight: 700; }
 .todo ul { margin: 0.4rem 0 0; padding-left: 1.1rem; }
 .todo p { margin-bottom: 0.4em; }
 .todo code { font-family: var(--data); font-size: 0.8125rem; }
@@ -206,6 +210,34 @@ article.post .by { font-family: var(--label); font-size: 0.8125rem; color: var(-
 
 /* ---------- pager ---------- */
 .pager { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 4rem; padding-top: 1.25rem; border-top: 3px solid var(--ink); font-family: var(--label); font-size: 0.9375rem; }
+
+/* ---------- 3D monolith (drawn by js/soil3d.js) ---------- */
+.monolith { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) 15.5rem; gap: 0.75rem 1.5rem; align-items: start; }
+.monolith .stage {
+  position: relative; height: min(74vh, 40rem); border: 1.5px solid var(--ink); overflow: hidden;
+  background: radial-gradient(ellipse at 50% 40%, var(--stage) 0 30%, var(--stage-edge) 100%);
+}
+.monolith .stage canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+.monolith .stage canvas:active { cursor: grabbing; }
+.monolith .stage-note { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; max-width: none; font-family: var(--label); font-size: 0.875rem; color: var(--stage-ink); }
+.monolith .bar { grid-column: 1; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.monolith .bar button {
+  font-family: var(--label); font-size: 0.8125rem; font-weight: 600; color: var(--ink);
+  background: var(--sheet); border: 1.5px solid var(--ink); border-radius: 3px; padding: 0.4rem 0.85rem; cursor: pointer;
+  transition: background-color 160ms ease-out, color 160ms ease-out;
+}
+.monolith .bar button:hover { background: var(--water-wash); }
+.monolith .bar button[aria-pressed="true"] { background: var(--ink); color: var(--ground); }
+.monolith .bar button[hidden] { display: none; }
+.monolith:not(:has(canvas)) .bar { visibility: hidden; }
+.monolith .card { grid-column: 2; grid-row: 1 / span 2; border-top: 3px solid var(--ink); padding-top: 0.8rem; font-family: var(--data); font-size: 0.8125rem; line-height: 1.5; }
+.monolith .card h3 { font-family: var(--data); font-weight: 500; font-size: 1.5rem; margin-bottom: 0.8rem; }
+.monolith .card h3 small { display: block; font-family: var(--label); font-size: 0.8125rem; font-weight: 400; color: var(--ink-soft); margin-top: 0.3rem; }
+.monolith .card dl { display: grid; grid-template-columns: max-content 1fr; gap: 0.35rem 0.9rem; margin: 0; }
+.monolith .card dt { font-family: var(--label); font-size: 0.75rem; font-weight: 600; color: var(--ink-soft); padding-top: 0.1em; }
+.monolith .card dd { margin: 0; }
+.monolith .card-hint { font-family: var(--label); color: var(--ink-soft); }
+.monolith figcaption { grid-column: 1 / -1; font-family: var(--label); font-size: 0.8125rem; line-height: 1.45; color: var(--ink-soft); max-width: var(--measure); }
 
 /* ---------- small screens ---------- */
 @media (max-width: 760px) {
@@ -227,16 +259,19 @@ article.post .by { font-family: var(--label); font-size: 0.8125rem; color: var(-
   .cores .core .hz { font-size: 0.6875rem; }
   dl.taxa { grid-template-columns: 1fr; gap: 0; }
   dl.taxa dd { margin-bottom: 0.6rem; }
+  .monolith { grid-template-columns: minmax(0, 1fr); }
+  .monolith .stage { height: min(58vh, 30rem); }
+  .monolith .card { grid-column: 1; grid-row: auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .rail .core { animation: none; }
-  .cores a.col .core, .core .hz, table.drocts tbody tr { transition: none; }
+  .cores a.col .core, .core .hz, table.drocts tbody tr, .monolith .bar button { transition: none; }
 }
 
 @media print {
-  .masthead, .rail, .todo, .pager { display: none; }
+  .masthead, .rail, .todo, .pager, .monolith-section { display: none; }
   .soil { display: block; }
   body { background: #fff; }
 }
