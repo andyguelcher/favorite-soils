@@ -29,12 +29,18 @@
 Texture: sl, sandy loam; ls, loamy sand; grsl, gravelly sandy loam.
 Structure: sbk, subangular blocky.
 
-<img width="3636" height="2856" alt="MountwowDRoCTS" src="https://github.com/user-attachments/assets/38b26da9-bc36-4055-91a2-7d25d2c1c724" />
+<img width="3636" height="2856" alt="MountwowDRoCTS" src="https://github.com/user-attachments/assets/91ab4b34-276f-42f3-853a-0a7911141a51" />
+
 ![Katherine Kovich DRoCTS Table](MountwowDRoCTS.jpg)
 
 ## A groupmate's table, scored
 
 TO DO: Upload a screenshot of the DRoCTS+ rubric you filled out for one groupmate's table, then replace this line with a picture line saying whose table it is.
+
+## How it formed
+
+
+
 
 ## Annual water budget, compared
 
