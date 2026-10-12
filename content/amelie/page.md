@@ -33,8 +33,8 @@ Structure: pl = platy, gr = granular, sbk = subangular blocky, pris = prismatic
 ![My DRoCTS+ table](Vernooy-Weminuche%20Series%20Drocts%2B.png)
 
 ## A groupmate's table, scored
+[! Andy's Drocts+ Table, reviewed)(Drocts%2BAndysScreenshot.jpg) 
 
-TO DO: Upload a screenshot of the DRoCTS+ rubric you filled out for one groupmate's table, then replace this line with a picture line saying whose table it is.
 
 ## Annual water budget, compared
 
