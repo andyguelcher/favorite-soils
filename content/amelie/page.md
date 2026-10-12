@@ -11,7 +11,7 @@
 
 ## DRoCTS+ table
 
-TO DO: Upload a picture of your DRoCTS+ table into this folder, then replace this line with: ![My DRoCTS+ table](Vernooy-Weminuche_Series_Drocts+.png)
+![My DRoCTS+ table](Vernooy-Weminuche%20Series%20Drocts%2B.png)
 
 ## A groupmate's table, scored
 
