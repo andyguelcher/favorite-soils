@@ -1,6 +1,6 @@
 Optional. Paste the horizon paragraphs from the TYPICAL PEDON part of your soil's Official Series Description here, one paragraph per horizon, each starting like "Ap--0 to 23 cm;". The 3D model uses them for structure, mottles, roots and boundaries. Lines that are not horizon paragraphs, like this one, are ignored. See content/andy/osd.txt for an example.
 
- 0i--0 to 2 inches; partially decomposed, organic material consisting mainly of needles, twigs, and bark. (1 to 4 inches thick)
+0i--0 to 2 inches; partially decomposed, organic material consisting mainly of needles, twigs, and bark. (1 to 4 inches thick)
 
 A--2 to 4 inches; reddish brown (5YR 4/3) loam, dark reddish brown (5YR 3/3) moist; weak very thin platy structure parting to moderate very fine granular; soft, very friable, nonsticky and nonplastic; 3 percent gravel, 3 percent cobble; neutral (pH 7.2); clear wavy boundary. (0 to 3 inches thick)
 
