@@ -25,10 +25,7 @@
 
 
 
-
-
-
-# Table As Submitted to Canvas
+## Drocts+ Table As Submitted to Canvas
 
 
 ![My DRoCTS+ table](Vernooy-Weminuche%20Series%20Drocts%2B.png)
