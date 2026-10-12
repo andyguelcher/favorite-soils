@@ -29,8 +29,7 @@
 Texture: sl, sandy loam; ls, loamy sand; grsl, gravelly sandy loam.
 Structure: sbk, subangular blocky.
 
-
-
+<img width="3636" height="2856" alt="MountwowDRoCTS" src="https://github.com/user-attachments/assets/38b26da9-bc36-4055-91a2-7d25d2c1c724" />
 ![Katherine Kovich DRoCTS Table](MountwowDRoCTS.jpg)
 
 ## A groupmate's table, scored
