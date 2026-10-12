@@ -27,10 +27,14 @@ Structure: pl = platy, gr = granular, sbk = subangular blocky, pris = prismatic
 
 
 
-## Drocts+ Table As Submitted to Canvas
+## Drocts+ Table As Submitted to Canvas:
 
 
 ![My DRoCTS+ table](Vernooy-Weminuche%20Series%20Drocts%2B.png)
+
+##How It Formed + Evolutionary Diagram: 
+
+
 
 ## Andy Guelcher's written DRoCTS+ table, scored
 ![Andy's Drocts+ Table](Drocts%2BAndysScreenshot.jpg)
