@@ -21,7 +21,9 @@
 | Bt2	| 34-44	| 21%	| 2.5YR 4/6	| gr/cl	| pris/sbk	| ne | 6.6 |
 | BC	| 44-62	| 14%	| 2.5YR 4/6	| cl	| sbk/gr	| ne	| 6.6 |
 
+Texture: l = loam, fsl = fine sandy loam, fsil = fine silty loam, cl = clay loam, gr/cl = gravelly clay loam, sicl = silty clay loam
 
+Structure: pl = platy, gr = granular, sbk = subangular blocky, pris = prismatic
 
 
 
