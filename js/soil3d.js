@@ -138,6 +138,9 @@ const ABUNDANCE = { "very few": 0.004, few: 0.012, common: 0.06, many: 0.22 };  
 const FEATURE_R = { fine: 0.2, medium: 0.5, coarse: 0.9, "very coarse": 1.4, "extremely coarse": 2 };   // blob radius, cm
 const ROOTS_PER_CM = { "very few": 0.08, few: 0.25, common: 0.6, many: 1.2 };
 const ROOT_W = { "very fine": 0.04, fine: 0.1, medium: 0.25, coarse: 0.6, "very coarse": 1 };
+// Rock fragment radius range in cm, by kind (gravel 0.2-7.5 cm, cobbles 7.5-25 cm, stones 25-60 cm across).
+const FRAG_R = { gravel: [0.3, 1.6], channers: [0.5, 2.5], cobbles: [4, 10], stones: [13, 20] };
+const fragKind = (word) => (/cobbl/.test(word) ? "cobbles" : /ston/.test(word) ? "stones" : /channer/.test(word) ? "channers" : "gravel");
 const BOUNDARY_CM = { "very abrupt": 0.3, abrupt: 1, clear: 3.5, gradual: 10, diffuse: 20 };
 const BOUNDARY_WAVE = { smooth: [0.3, 40], wavy: [2.5, 20], irregular: [4, 7], broken: [3, 10] };   // amplitude, wavelength (cm)
 
@@ -149,13 +152,15 @@ function munsellsIn(text) {
 // Pull out the horizon paragraphs ("Ap--0 to 23 cm; black (10YR 2/1) ...") and ignore everything else.
 function parseOSD(text) {
   const out = {};
-  const head = /^\s*([0-9]*[A-Z][A-Za-z0-9'’/&]*)\s*-{1,2}\s*(\d+(?:\.\d+)?)\s*to\s*(\d+(?:\.\d+)?)\s*(cm|centimeters|in|inches)\b[^;]*;\s*(.*)$/;
+  const head = /^\s*(0[a-z][A-Za-z0-9]*|[0-9]*[A-Z][A-Za-z0-9'’/&]*)\s*-{1,2}\s*(\d+(?:\.\d+)?)\s*to\s*(\d+(?:\.\d+)?)\s*(cm|centimeters|in|inches)\b[^;]*;\s*(.*)$/;
   let cur = null;
   text.replace(/\r/g, "").split("\n").forEach((line) => {
     const m = line.match(head);
     if (m) {
-      cur = { name: m[1], text: m[5] };
-      out[m[1]] = cur;
+      // Some descriptions type "0i" (zero) for an Oi horizon.
+      const name = m[1].replace(/^0(?=[a-z])/, "O");
+      cur = { name: name, text: m[5] };
+      out[name] = cur;
     } else if (cur && line.trim() && !/^[A-Z][A-Z ]{4,}:/.test(line.trim())) {
       cur.text += " " + line.trim();
     } else {
@@ -169,11 +174,20 @@ function parseOSD(text) {
 function readHorizon(text) {
   const o = { features: [], structures: [] };
   const clauses = text.split(";").map((c) => c.trim().replace(/\.$/, "")).filter(Boolean);
-  const first = (clauses[0] || "").toLowerCase().split(",")[0];
-  const tx = OSD_TEXTURES.find(([n]) => new RegExp("\\b" + n + "\\b").test(first));
-  o.texture = tx ? tx[1] : null;
-  if (/\bvery (gravelly|cobbly|channery|stony)\b/.test(first)) o.rocks = 45;
-  else if (/\b(gravelly|cobbly|channery|stony)\b/.test(first)) o.rocks = 22;
+  // The texture is the first one named, e.g. "black (10YR 2/1) fine sandy loam, ..." or
+  // "(65 percent E), reddish brown (5YR 5/4) loam, ...". Longer names win at the same spot.
+  const first = (clauses[0] || "").toLowerCase();
+  let at = Infinity;
+  o.texture = null;
+  OSD_TEXTURES.forEach(([n, code]) => {
+    const m = first.match(new RegExp("\\b" + n + "\\b"));
+    if (m && m.index < at) { at = m.index; o.texture = code; }
+  });
+  const modifier = first.match(/\b(very |extremely )?(gravelly|cobbly|channery|stony)\b/);
+  if (modifier) {
+    o.rocks = modifier[1] ? 45 : 22;
+    o.fragments = [{ pct: o.rocks, kind: fragKind(modifier[2]) }];
+  }
 
   clauses.slice(1).forEach((raw) => {
     const c = raw.toLowerCase();
@@ -188,8 +202,11 @@ function readHorizon(text) {
       }).filter(Boolean);
       return;
     }
-    if ((m = c.match(/(\d+(?:\.\d+)?)\s*(?:to\s*\d+(?:\.\d+)?\s*)?percent\s+[a-z ]*?(rock fragments|fragments|gravel|cobbles|channers|stones|pebbles)/))) {
-      o.rocks = parseFloat(m[1]);
+    // Rock fragments, adding up every kind listed: "8 percent gravel, 4 percent cobbles, 2 percent stones".
+    const frags = [...c.matchAll(/(\d+(?:\.\d+)?)\s*(?:to\s*\d+(?:\.\d+)?\s*)?percent\s+[a-z ]*?(rock fragments|fragments|gravel|cobbles?|channers|stones|pebbles)/g)];
+    if (frags.length) {
+      o.fragments = frags.map((f) => ({ pct: parseFloat(f[1]), kind: fragKind(f[2]) }));
+      o.rocks = o.fragments.reduce((sum, f) => sum + f.pct, 0);
       return;
     }
     if ((m = c.match(/\b(very few|few|common|many)\s+((?:very fine|fine|medium|very coarse|coarse)(?:\s*(?:and|,)\s*(?:very fine|fine|medium|very coarse|coarse))*)\s+roots/))) {
@@ -231,18 +248,19 @@ function readHorizon(text) {
 function lookFor(hz, row, osd) {
   if (!row && !osd) return null;
   const parts = nameParts(hz.name), has = (x) => parts.suffix.includes(x);
-  const L = { texture: null, structures: [], partings: false, rocks: 0, roots: null, features: [], boundary: null, dense: false };
+  const L = { texture: null, structures: [], partings: false, rocks: 0, fragments: [], roots: null, features: [], boundary: null, dense: false };
   if (row) {
     L.texture = codeIn(row.texture, TEXTURES);
     const st = codeIn(row.structure, STRUCTURES);
     if (st) L.structures = [{ type: st, grade: 2, size: 2 }];
     L.rocks = parseFloat((row.rocks.match(/\d+(\.\d+)?/) || ["0"])[0]);
+    L.fragments = [{ pct: L.rocks, kind: "gravel" }];
   }
   if (osd) {
     L.texture = osd.texture || L.texture;
     if (osd.structures.length) L.structures = osd.structures;
     L.partings = osd.partings;
-    if (osd.rocks !== undefined) L.rocks = osd.rocks;
+    if (osd.fragments) { L.rocks = osd.rocks; L.fragments = osd.fragments; }
     L.roots = osd.roots || null;
     L.features = osd.features.map((f) => ({ ...f, colors: f.colors.map((c) => rgbOf(window.soilColor(c))) }));
     L.boundary = osd.boundary || null;
@@ -470,10 +488,13 @@ function paintFace(hz, look, wcm, hcm, s, below, plan) {
     }
   }
 
-  // Rocks: scatter about that share of the face with small pebbles.
+  // Rocks: scatter that share of the face with fragments sized by kind (gravel, cobbles, stones).
   const stones = [[128, 122, 112], [104, 97, 87], [146, 134, 112], [86, 82, 77], [120, 102, 82]];
-  for (let i = 0, n = Math.round((Math.min(60, look.rocks || 0) / 100) * area / 2.4); i < n; i++) {
-    const x = r() * w, y = r() * h, rx = (0.45 + r() * 1.1) * s, ry = rx * (0.55 + r() * 0.4), rot = r() * Math.PI;
+  look.fragments.forEach((f) => {
+   const [r0, r1] = FRAG_R[f.kind], flat = f.kind === "channers" ? 0.35 : 0.55, avg = (r0 + r1) / 2;
+   const expected = (Math.min(60, f.pct) / 100) * area / (Math.PI * avg * avg * (flat + 0.2));
+   for (let i = 0, n = Math.floor(expected + r()); i < n; i++) {
+    const x = r() * w, y = r() * h, rx = (r0 + r() * (r1 - r0)) * s, ry = rx * (flat + r() * 0.4), rot = r() * Math.PI;
     const c = pick(stones);
     ctx.fillStyle = "rgba(0,0,0,0.3)";
     ctx.beginPath(); ctx.ellipse(x + 0.12 * s, y + 0.15 * s, rx, ry, rot, 0, Math.PI * 2); ctx.fill();
@@ -482,7 +503,8 @@ function paintFace(hz, look, wcm, hcm, s, below, plan) {
     g.addColorStop(1, css(shade(c, -0.15)));
     ctx.fillStyle = g;
     ctx.beginPath(); ctx.ellipse(x, y, rx, ry, rot, 0, Math.PI * 2); ctx.fill();
-  }
+   }
+  });
 
   // Keep a copy without the lower boundary, for the horizon above to blend into.
   if (!plan) {

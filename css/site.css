@@ -51,6 +51,7 @@ body {
   line-height: 1.62;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overflow-wrap: break-word;   /* long web addresses wrap instead of widening the page */
 }
 
 ::selection { background: var(--water); color: var(--bar); }
@@ -110,12 +111,13 @@ section > h2 { margin-bottom: 1.1rem; padding-top: 1.1rem; border-top: 3px solid
 /* ---------- soil cores (the profile drawings) ---------- */
 .core { display: flex; flex-direction: column; border: 1.5px solid var(--line); background: var(--sheet); overflow: hidden; }
 .core .hz {
-  position: relative; display: flex; align-items: center; justify-content: center; min-height: 0;
+  position: relative; display: flex; align-items: center; justify-content: center; min-height: 0; min-width: 0;
   color: #f4efe6; font-family: var(--data); font-size: 0.8125rem; font-weight: 500;
   border: 0; border-top: 1px solid rgba(255, 255, 255, 0.28); padding: 0; margin: 0; width: 100%;
   cursor: pointer; transition: filter 180ms ease-out, box-shadow 180ms ease-out;
 }
 .core .hz:first-child { border-top: 0; }
+.core .hz.is-thin { color: transparent; }   /* too thin for its label; see fitCore() in site.js */
 .core .hz:hover, .core .hz.is-on { filter: brightness(1.28) saturate(1.15); box-shadow: inset 0 0 0 2px #fff; z-index: 1; }
 .core .hz:focus-visible { outline-offset: -4px; outline-color: #fff; }
 .core.is-empty {

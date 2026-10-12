@@ -26,7 +26,8 @@
       if (!line) return;
       var kv = line.match(/^(series|name|subgroup|summary)\s*:\s*(.*)$/i);
       if (kv) { soil[kv[1].toLowerCase()] = kv[2].trim(); return; }
-      var parts = line.split(",").map(function (s) { return s.trim(); });
+      // Brackets around a whole horizon line, copied from the header line, are ignored.
+      var parts = line.replace(/^\((.*)\)$/, "$1").split(",").map(function (s) { return s.trim(); });
       if (parts.length >= 3 && !isNaN(parseFloat(parts[1])) && !isNaN(parseFloat(parts[2]))) {
         soil.horizons.push({
           name: parts[0],
@@ -213,6 +214,34 @@
     return core;
   }
 
+  /* Hide horizon labels and depth marks that don't fit, so a thin horizon
+     (a 2 cm O horizon, say) doesn't overlap its neighbours. The name is
+     still read out on hover and to screen readers. Re-run on resize. */
+  function fitCore(core, ticks) {
+    function fit() {
+      core.querySelectorAll(".hz").forEach(function (el) {
+        el.classList.remove("is-thin");
+        if (el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1) el.classList.add("is-thin");
+      });
+      if (!ticks) return;
+      var marks = [].slice.call(ticks.children), h = ticks.clientHeight, kept = null;
+      marks.forEach(function (mark, i) {
+        mark.hidden = false;
+        var y = parseFloat(mark.style.top) / 100 * h;
+        // Marks at the very top and bottom sit flush with the ends, so they need more room.
+        if (kept && y - kept.y < (kept.i === 0 || i === marks.length - 1 ? 19 : 13)) {
+          // The bottom depth always stays; the mark just above it gives way (but never 0).
+          if (i === marks.length - 1 && kept.i !== 0) kept.mark.hidden = true;
+          else { mark.hidden = true; return; }
+        }
+        kept = { mark: mark, y: y, i: i };
+      });
+    }
+    fit();
+    if (window.ResizeObserver) new ResizeObserver(fit).observe(core);
+    if (document.fonts) document.fonts.ready.then(fit);
+  }
+
   /* ---------- everyone's soil.txt, loaded once ---------- */
   var soilsReady = Promise.all(PEOPLE.map(function (p) {
     return load("content/" + p.folder + "/soil.txt").then(function (t) {
@@ -251,7 +280,8 @@
         var a = document.createElement("a");
         a.className = "col";
         a.href = soil.person.page;
-        a.appendChild(buildCore(soil, maxDepth, false));
+        var core = buildCore(soil, maxDepth, false);
+        a.appendChild(core);
         var cap = document.createElement("div");
         cap.className = "cap";
         var name = document.createElement("strong");
@@ -266,6 +296,7 @@
         cap.appendChild(document.createTextNode(soil.name || "Team member to add"));
         a.appendChild(cap);
         grid.appendChild(a);
+        fitCore(core, null);
       });
     });
 
@@ -318,6 +349,7 @@
         });
       }
       rail.appendChild(ticks);
+      fitCore(core, ticks);
 
       var readout = document.querySelector("[data-readout]");
       var rows = document.querySelectorAll("tr[data-hz]");
