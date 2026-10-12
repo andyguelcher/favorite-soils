@@ -32,7 +32,8 @@ Structure: pl = platy, gr = granular, sbk = subangular blocky, pris = prismatic
 
 ![My DRoCTS+ table](Vernooy-Weminuche%20Series%20Drocts%2B.png)
 
-##How It Formed + Evolutionary Diagram: 
+## How It Formed + Evolutionary Diagram: 
+![Soils Evo](soilevoquilt.jpg)
 
 
 
