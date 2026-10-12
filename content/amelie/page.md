@@ -1,6 +1,12 @@
 ## Classification
 
-TO DO: Replace this line with your soil's series, order, suborder, great group, subgroup and family.
+Series: Weminuche
+Order: Alfisols
+Suborder: Cryalfs
+Great group: Haplocryalf
+Subgroup: Ustic Haplocryalf
+Family: Fine-loamy, mixed, superactive Ustic Haplocryalfs
+
 
 ## DRoCTS+ table
 
