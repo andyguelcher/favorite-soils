@@ -26,7 +26,7 @@ const STRUCTURES = {
   cpr: "columnar", pl: "platy", ma: "massive", sg: "single grain"
 };
 const HCL = {
-  ne: "non-effervescent", vs: "very slightly effervescent", sl: "slightly effervescent",
+  ne: "non-effervescent", vs: "very slightly effervescent", sl: "slightly effervescent", se: "slightly effervescent",
   st: "strongly effervescent", ve: "violently effervescent", e: "effervescent"
 };
 const MASTERS = { O: "organic layer", A: "topsoil", E: "leached layer", B: "subsoil", C: "parent material", R: "bedrock" };
