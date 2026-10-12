@@ -33,7 +33,8 @@ Structure: sbk, subangular blocky.
 
 ## A groupmate's table, scored
 
-TO DO: Upload a screenshot of the DRoCTS+ rubric you filled out for one groupmate's table, then replace this line with a picture line saying whose table it is.
+![Amelie's Scored DRoCTS+ Table](DRoCTS.Scoring.jpeg)
+
 
 ## How it formed
 
