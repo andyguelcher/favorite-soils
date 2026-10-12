@@ -281,18 +281,31 @@ function readHorizon(text) {
       o.reaction = c;
       return;
     }
-    const kind = /depletion/.test(c) ? "depl"
-      : /coating|films|skeletans/.test(c) ? "coat"
-      : /carbonate|calcium|lime\b/.test(c) ? "carb"
-      : /iron|manganese|redox|mottle|concentration|concretion|nodule|masses/.test(c) ? "conc" : null;
-    if (!kind) return;
-    const amounts = [...c.matchAll(/\b(very few|few|common|many)\b/g)].map((x) => ABUNDANCE[x[1]]);
-    const sizes = [...c.matchAll(/\b(extremely coarse|very coarse|fine|medium|coarse)\b/g)].map((x) => FEATURE_R[x[1]]);
-    o.features.push({
-      kind, text: raw, colors: munsellsIn(raw),
-      amount: amounts.length ? Math.max(...amounts) : ABUNDANCE.common,
-      sizes: sizes.length ? sizes : [0.5],
-      faces: /faces|surfaces|pores|channels/.test(c) && !/in the matrix/.test(c)
+    // One clause can hold several features: "2 percent gray (10YR 5/1) iron depletions in matrix and
+    // 4 percent ... masses of oxidized iron". Split before each new amount; a part that names no
+    // feature ("common ... yellowish brown (10YR 5/6) and few ... masses of iron") borrows the next one's.
+    const kindOf = (t) => /depletion/.test(t) ? "depl"
+      : /coating|films|skeletans/.test(t) ? "coat"
+      : /carbonate|calcium|lime\b/.test(t) ? "carb"
+      : /iron|manganese|redox|mottle|concentration|concretion|nodule|masses/.test(t) ? "conc" : null;
+    if (!kindOf(c)) return;
+    const pieces = raw.split(/\s+and\s+(?=(?:\d+(?:\.\d+)?\s*percent|very few|few|common|many)\b)/i);
+    const kinds = pieces.map((p) => kindOf(p.toLowerCase()));
+    for (let i = kinds.length - 2; i >= 0; i--) if (!kinds[i]) kinds[i] = kinds[i + 1];
+    const tail = pieces[pieces.length - 1].toLowerCase();
+    pieces.forEach((piece, i) => {
+      const t = piece.toLowerCase(), kind = kinds[i];
+      if (!kind) return;
+      const pct = t.match(/(\d+(?:\.\d+)?)\s*percent/);
+      const amounts = [...t.matchAll(/\b(very few|few|common|many)\b/g)].map((x) => ABUNDANCE[x[1]]);
+      const sizes = [...t.matchAll(/\b(extremely coarse|very coarse|fine|medium|coarse)\b/g)].map((x) => FEATURE_R[x[1]]);
+      const where = /faces|surfaces|pores|channels|matrix/.test(t) ? t : tail;   // location is often only at the end
+      o.features.push({
+        kind, text: piece, colors: munsellsIn(piece),
+        amount: pct ? parseFloat(pct[1]) / 100 : amounts.length ? Math.max(...amounts) : ABUNDANCE.common,
+        sizes: sizes.length ? sizes : [0.5],
+        faces: /faces|surfaces|pores|channels/.test(where) && !/in (the )?matrix/.test(where)
+      });
     });
   });
   return o;
@@ -690,7 +703,13 @@ function featureLabel(f) {
   return FEATURE_LABEL[f.kind];
 }
 function osdFor(osd, name) {
-  return osd[name] || osd[Object.keys(osd).find((k) => k.toLowerCase() === name.toLowerCase())] || null;
+  const keys = Object.keys(osd), low = name.toLowerCase();
+  const same = keys.find((k) => k.toLowerCase() === low);
+  if (same) return osd[same];
+  // "Agb" in the description and "Agb1" in soil.txt: match when only a trailing number differs, and only one does.
+  const bare = (k) => k.toLowerCase().replace(/\d+$/, "");
+  const close = keys.filter((k) => bare(k) === bare(name));
+  return close.length === 1 ? osd[close[0]] : null;
 }
 
 function fillCard(card, soil, table, osd, name) {
@@ -761,7 +780,8 @@ function fillCard(card, soil, table, osd, name) {
   };
   add("Structure", described.structureText);
   described.features.forEach((f) => {
-    const amount = (f.text.toLowerCase().match(/\b(very few|few|common|many)\b/) || [""])[0];
+    const pct = f.text.match(/(\d+(?:\.\d+)?)\s*percent/i);
+    const amount = pct ? pct[1] + "%" : (f.text.toLowerCase().match(/\b(very few|few|common|many)\b/) || [""])[0];
     add(featureLabel(f), [amount, f.colors.join(", ")].filter(Boolean).join(", "), f.colors);
   });
   add("Roots", described.roots && described.roots.text);

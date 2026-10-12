@@ -1,7 +1,7 @@
 Series: Mountwow
 Name: Katherine Kovich
 Subgroup: Thaptic Cryaquands
-Summary: A somewhat poorly drained andisol of volcanic ash over colloquium
+Summary: A somewhat poorly drained Andisol of volcanic ash over colluvium
 
 Horizons (name, top in cm, bottom in cm, moist color)
 Oi, 0, 2, N/A

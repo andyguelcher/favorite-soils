@@ -1,2 +1,31 @@
 Optional. Paste the horizon paragraphs from the TYPICAL PEDON part of your soil's Official Series Description here, one paragraph per horizon, each starting like "Ap--0 to 23 cm;". The 3D model uses them for structure, mottles, roots and boundaries. Lines that are not horizon paragraphs, like this one, are ignored. See content/andy/osd.txt for an example.
 
+Source: Soil Survey Staff, USDA-NRCS. Official Series Description, MOUNTWOW series. https://soilseries.sc.egov.usda.gov/OSD_Docs/M/MOUNTWOW.html
+
+Slope--0 to 65 percent
+
+Oi--0 to 2 cm; slightly decomposed plant material; many fine interstitial pores; very strongly acid (pH 4.5); abrupt wavy boundary
+
+A--2 to 10 cm; medial sandy loam, grayish brown (10YR 5/2) dry, very dark grayish brown (10YR 3/2) moist; weak fine subangular blocky structure; soft, very friable, nonsticky and nonplastic; common very fine and few fine roots; common very fine and fine interstitial pores; strongly acid (pH 5.2); abrupt wavy boundary
+
+Bw1--10 to 14 cm; paragravelly medial coarse sandy loam, brown (7.5YR 5/3) dry, dark brown (7.5YR 3/3) moist; weak fine subangular blocky structure; soft, very friable, nonsticky and nonplastic; common very fine roots; common very fine and fine interstitial pores; 10 percent fine pumice paragravel and 10 percent medium and coarse pumice paragravel; strongly acid (pH 5.2); abrupt wavy boundary
+
+Bw2--14 to 26 cm; medial fine sandy loam, light brownish gray (10YR 6/2) dry, dark grayish brown (10YR 4/2) moist; weak fine subangular blocky structure; soft, very friable, nonsticky and nonplastic; few very fine roots; common very fine and fine interstitial pores; 10 percent fine pumice paragravel; strongly acid (pH 5.2); clear wavy boundary
+
+Bw3--26 to 37 cm; medial loamy sand, very pale brown (10YR 7/4) dry, yellowish brown (10YR 5/4) moist; weak fine subangular blocky structure; soft, very friable, nonsticky and nonplastic; few very fine roots; common very fine and fine interstitial pores; 5 percent fine pumice paragravel and 5 percent medium and coarse pumice paragravel; strongly acid (pH 5.2); abrupt wavy boundary
+
+Agb--37 to 44 cm; medial sandy loam, dark grayish brown (10YR 4/2) dry, very dark brown (10YR 2/2) moist; weak fine subangular blocky structure; soft, very friable, nonsticky and nonplastic; few very fine roots; common very fine and fine irregular pores; 2 percent gray (10YR 5/1) iron depletions in matrix and 4 percent dark reddish brown (5YR 3/4) masses of oxidized iron with diffuse boundaries along root channels; strongly acid (pH 5.2); abrupt wavy boundary
+
+Bgb1--44 to 51 cm; paragravelly medial sandy loam, brown (7.5YR 5/4) dry, dark brown (7.5YR 3/4) moist; weak fine subangular blocky structure; soft, very friable, nonsticky and nonplastic; few very fine roots; common very fine and fine interstitial pores; 4 percent dark reddish brown (5YR 3/4) masses of oxidized iron with diffuse boundaries along root channels; 10 percent fine pumice paragravel and 10 percent medium and coarse pumice paragravel; strongly acid (pH 5.2); clear wavy boundary
+
+Bgb2--51 to 60 cm; medial coarse sandy loam, brown (7.5YR 5/3) dry, dark brown (7.5YR 3/3) moist; weak fine subangular blocky structure; soft, very friable, nonsticky and nonplastic; few very fine roots; common very fine and fine interstitial pores; 4 percent dark reddish brown (5YR 3/4) masses of oxidized iron with diffuse boundaries along root channels; 10 percent fine pumice paragravel; strongly acid (pH 5.2); abrupt wavy boundary
+
+Bgb3--60 to 66 cm; medial fine sandy loam, reddish yellow (7.5YR 7/6) dry, strong brown (7.5YR 5/6) moist; weak fine subangular blocky structure; soft, very friable, nonsticky and nonplastic; few very fine roots; common very fine and fine interstitial pores; 2 percent gray (10YR 5/1) iron depletions in matrix and 4 percent dark reddish brown (5YR 3/4) masses of oxidized iron with diffuse boundaries along root channels; strongly acid (pH 5.2); abrupt smooth boundary
+
+2Agb2--66 to 85 cm; medial sandy loam, dark grayish brown (10YR 4/2) dry, very dark brown (10YR 2/2) moist; weak fine subangular blocky structure; soft, very friable, nonsticky and nonplastic; few very fine roots; common very fine and fine irregular pores; 2 percent gray (10YR 5/1) iron depletions in matrix and 4 percent dark reddish brown (5YR 3/4) masses of oxidized iron with diffuse boundaries along root channels; strongly acid (pH 5.4); abrupt wavy boundary
+
+2Bgb4--85 to 120 cm; very gravelly medial sandy loam, yellowish brown (10YR 5/4) dry, dark yellowish brown (10YR 3/4) moist; weak fine subangular blocky structure; soft, very friable, nonsticky and nonplastic; few very fine roots; common very fine and fine interstitial pores; 2 percent gray (10YR 5/1) iron depletions in matrix and 4 percent dark reddish brown (5YR 3/4) masses of oxidized iron with diffuse boundaries along root channels; 15 percent fine andesite gravel, 15 percent medium and coarse andesite gravel, and 15 percent andesite cobbles; strongly acid (pH 5.4); clear wavy boundary
+
+2Bgb5--120 to 150 cm; very gravelly medial sandy loam, yellowish brown (10YR 5/4) dry, dark yellowish brown (10YR 3/4) moist; weak fine subangular blocky structure; soft, very friable, nonsticky and nonplastic; few very fine roots; common very fine and fine interstitial pores; 2 percent gray (10YR 5/1) iron depletions in matrix and 4 percent dark reddish brown (5YR 3/4) masses of oxidized iron with diffuse boundaries along root channels; 15 percent fine andesite gravel, 15 percent medium and coarse andesite gravel, and 20 percent andesite cobbles; strongly acid (pH 5.4)
+
+Elevation--1200 to 2500 m

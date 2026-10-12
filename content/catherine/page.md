@@ -5,7 +5,7 @@
 | Series | Mountwow |
 | Order | Andisols |
 | Suborder | Aquands |
-| Greatgroup | Cryaquands |
+| Great group | Cryaquands |
 | Subgroup | Thaptic Cryaquands |
 | Family | Medial, glassy, acid Thaptic Cryaquands |
 
@@ -39,7 +39,7 @@ TO DO: Upload a screenshot of the DRoCTS+ rubric you filled out for one groupmat
 
 ![Katherine Kovich Evolutionary Diagram](evolution-diagram.jpg)
 
-1. Collovium was deposited aided by water and gravity
+1. Colluvium was deposited aided by water and gravity
 
 2. First volcanic eruption occurs depositing tephra, volcanic glass, and pumice
 

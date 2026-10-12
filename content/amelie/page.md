@@ -4,8 +4,8 @@
 | Series: | Weminuche |
 | Order: | Alfisols |
 | Suborder: | Cryalfs |
-| Great group: | Haplocryalf |
-| Subgroup: | Ustic Haplocryalf |
+| Great group: | Haplocryalfs |
+| Subgroup: | Ustic Haplocryalfs |
 | Family: | Fine-loamy, mixed, superactive Ustic Haplocryalfs |
 
 

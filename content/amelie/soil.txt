@@ -1,6 +1,6 @@
 Series: Weminuche
 Name: Amelie Vernooy
-Subgroup: Ustic Haplocryalf
+Subgroup: Ustic Haplocryalfs
 Summary: A deep, well-drained fine loam formed mainly from slope alluvium originating from redbed sandstone.
 
 Horizons (name, top in cm, bottom in cm, moist color)
