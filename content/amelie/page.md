@@ -10,7 +10,7 @@ Family: Fine-loamy, mixed, superactive Ustic Haplocryalfs
 
 ## DRoCTS+ table
 
-TO DO: Upload a picture of your DRoCTS+ table into this folder, then replace this line with: ![My DRoCTS+ table](the-file-name.jpg)
+TO DO: Upload a picture of your DRoCTS+ table into this folder, then replace this line with: ![My DRoCTS+ table](Vernooy-Weminuche_Series_Drocts+.png)
 
 ## A groupmate's table, scored
 
