@@ -1,6 +1,18 @@
-Series:
-Name:
-Subgroup:
-Summary:
+Series: Mountwow
+Name: Katherine Kovich
+Subgroup: Thaptic Cryaquands
+Summary: A somewhat poorly drained andisol of volcanic ash over colloquium
 
 Horizons (name, top in cm, bottom in cm, moist color)
+Oi, 0, 2, N/A
+A, 2, 10, 10YR 3/2
+Bw1, 10, 14, 7.5YR 3/3
+Bw2, 14, 26, 10YR 4/2
+Bw3, 26, 37, 10YR 5/4
+Agb1, 37, 44, 10YR 2/2
+Bgb1, 44, 51, 7.5YR 3/4
+Bgb2, 51, 60, 7.5YR 3/3
+Bgb3, 60, 66, 7.5YR 5/6
+2Agb2, 66, 85, 10YR 2/2
+2Bgb4, 85, 120, 10YR 3/4
+2Bgb5, 120, 150, 10YR 3/4
