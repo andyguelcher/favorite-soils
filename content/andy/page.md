@@ -28,9 +28,9 @@ Depths converted from centimetres to inches. pH ranges estimated from the reacti
 
 ![The table as submitted for FSR 1.](drocts-table.jpg)
 
-## A groupmate's table, scored
+## Katherine Kovich's DRoCTS+ table, scored
 
-TO DO: Upload a screenshot of the DRoCTS+ rubric you filled out for one groupmate's table into this folder, then replace this line with a picture line like the one above, saying whose table it is.
+![My DRoCTS+ rubric for Katherine Kovich's Mountwow table, 10 out of 10.](KatherineRubric.png)
 
 ## How it formed
 
