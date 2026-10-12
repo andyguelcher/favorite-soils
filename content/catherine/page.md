@@ -39,13 +39,14 @@ TO DO: Upload a screenshot of the DRoCTS+ rubric you filled out for one groupmat
 
 ## How it formed
 
-| --- | 
+<img width="3924" height="2749" alt="MountwowEvolutionary" src="https://github.com/user-attachments/assets/21cf567f-07b5-4f68-ab77-ffdec4158d44" />
+![Katherine Kovich Evolutionary Diagram] 
 1. Collovium was deposited aided by water and gravity
-| --- |
+
 2. First volcanic eruption occurs depositing tephra, volcanic glass, and pumice
-| --- |
+
 3. Second volcanic eruption occurs depositing more tephra, volcanic glass, and pumice
-| --- |
+
 4. Vegetation grows and accumulates into the Oi horizon
 
 
