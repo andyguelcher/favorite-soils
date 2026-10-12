@@ -34,7 +34,7 @@ Structure: sbk, subangular blocky.
 ## A groupmate's table, scored
 
 ![Amelie's Scored DRoCTS+ Table](DRoCTS.Scoring.jpeg)
-Amelie's Scored DRoCTS+ Table
+
 
 ## How it formed
 
