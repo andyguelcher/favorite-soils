@@ -11,7 +11,25 @@
 
 ## DRoCTS+ table
 
-<img width="3636" height="2856" alt="MountwowDRoCTS" src="https://github.com/user-attachments/assets/e9465ed7-2571-4770-93cc-1c75893a25f3" />
+| Horizon | Depth (cm) | Rocks (%) | Colors (Dry) | Textures | Structure | HCl | pH |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Oi | 2 | 0 | N/A | N/A | N/A | ne | 5.2 |
+| A | 10 | 0 | 10YR 5/2 | sl | sbk | ne | 5.2 |
+| Bw1 | 14 | 20 | 7.5YR 5/3 | sl | sbk | ne | 5.2 |
+| Bw2 | 26 | 10 | 10YR 6/2 | sl | sbk | ne | 5.2 |
+| Bw3 | 37 | 10 | 10YR 7/4 | ls | sbk | ne | 5.2 |
+| Agb1 | 44 | 0 | 10YR 4/2 | sl | sbk | ne | 5.2 |
+| Bgb1 | 51 | 20 | 7.5YR 5/4 | sl | sbk | ne | 5.2 |
+| Bgb2 | 60 | 10 | 7.5YR 5/3 | sl | sbk | ne | 5.2 |
+| Bgb3 | 66 | 0 | 7.5YR 7/6 | sl | sbk | ne | 5.2 |
+| 2Agb2 | 85 | 0 | 10YR 4/2 | sl | sbk | ne | 5.4 |
+| 2Bgb4 | 120 | 45 | 10YR 5/4 | grsl | sbk | ne | 5.4 |
+| 2Bgb5 | 150 | 50 | 10YR 5/4 | grsl | sbk | ne | 5.4 |
+
+Texture: sl, sandy loam; ls, loamy sand; grsl, gravelly sandy loam.
+Structure: sbk, subangular blocky.
+
+
 
 ![Katherine Kovich DRoCTS Table](MountwowDRoCTS.jpg)
 
