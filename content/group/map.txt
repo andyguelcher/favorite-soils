@@ -1,2 +1,2 @@
 Paste the Google My Maps embed code on the line below this one, replacing nothing else. (In My Maps: three dots, "Embed on my site", copy.)
-
+https://www.google.com/maps/d/u/0/edit?mid=1DN9kpesQ0kVOmj9TipkjETnTbMdW54w&usp=sharing
