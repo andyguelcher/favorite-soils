@@ -305,10 +305,12 @@
 
     var map = document.querySelector("[data-map]");
     if (map) load("content/group/map.txt").then(function (t) {
-      var m = t.match(/https:\/\/www\.google\.com\/maps\/d\/(?:u\/\d+\/)?embed\?[^"'\s<>]+/);
+      // Any My Maps link works: the embed code, the "share" link or the editor's address.
+      // They all carry the map's id ("mid=..."), which is all the embed needs.
+      var m = t.match(/https:\/\/www\.google\.com\/maps\/d\/[^"'\s<>]*?[?&](?:amp;)?mid=([\w-]+)/);
       if (!m) return;
       var frame = document.createElement("iframe");
-      frame.src = m[0].replace(/&amp;/g, "&");
+      frame.src = "https://www.google.com/maps/d/embed?mid=" + m[1];
       frame.title = "Map of our three soils";
       frame.loading = "lazy";
       map.innerHTML = "";
