@@ -122,6 +122,12 @@
       }
 
       var img = line.trim().match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+      // GitHub's editor inserts <img ... alt="..." src="..."> when a picture is dragged in; treat it the same.
+      var tag = line.trim().match(/^<img\b[^>]*>$/i);
+      if (tag) {
+        var tsrc = line.match(/\ssrc\s*=\s*"([^"]+)"/i), talt = line.match(/\salt\s*=\s*"([^"]*)"/i);
+        if (tsrc && /^(https?:\/\/|[\w.\-\/]+$)/i.test(tsrc[1])) img = [line, talt ? talt[1] : "", tsrc[1]];
+      }
       if (img) {
         var src = /^(https?:)?\/\//.test(img[2]) ? img[2] : base + img[2].trim();
         out.push('<figure class="plate"><img src="' + esc(src) + '" alt="' + esc(img[1]) + '" loading="lazy">' +
@@ -162,7 +168,7 @@
       }
 
       var para = [];
-      while (i < lines.length && lines[i].trim() && !/^(#{1,3}\s|\s*\||\s*[-*]\s+|\s*\d+[.)]\s+|\s*!\[)/.test(lines[i])) {
+      while (i < lines.length && lines[i].trim() && !/^(#{1,3}\s|\s*\||\s*[-*]\s+|\s*\d+[.)]\s+|\s*!\[|\s*<img\b)/i.test(lines[i])) {
         para.push(lines[i].trim()); i++;
       }
       if (!para.length) { para.push(line.trim()); i++; }
