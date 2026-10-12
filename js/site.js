@@ -41,22 +41,47 @@
     return soil;
   }
 
-  /* Rough screen colour for a Munsell notation such as "10YR 4/3".
-     Close enough to tell horizons apart; it is not a calibrated conversion. */
+  /* Screen colour for a Munsell notation such as "10YR 4/3" or "N 5/".
+     Value sets lightness by the ASTM D1535 formula; hue and chroma are
+     placed in CIELAB from approximate Munsell hue angles, then converted
+     to sRGB. A close approximation, not a calibrated chart match. */
+  var HUE_ANGLES = [[5, 24], [10, 38], [15, 58], [20, 77], [25, 92], [30, 101], [35, 112], [40, 133], [45, 160], [50, 177],
+    [55, 192], [60, 205], [65, 222], [70, 243], [75, 270], [80, 297], [85, 318], [90, 335], [95, 352], [100, 368]];
+  var HUE_START = { R: 0, YR: 10, Y: 20, GY: 30, G: 40, BG: 50, B: 60, PB: 70, P: 80, RP: 90 };
+  function munsellRGB(step, family, value, chroma) {
+    var V = value, Y = 1.1914 * V - 0.22533 * V * V + 0.23352 * Math.pow(V, 3) - 0.020484 * Math.pow(V, 4) + 0.00081939 * Math.pow(V, 5);
+    var t = Y / 100, fy = t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116;
+    var pos = (HUE_START[family] + step) % 100, angle = 0;
+    if (pos < 5) pos += 100;
+    for (var i = 0; i < HUE_ANGLES.length - 1; i++) {
+      var a = HUE_ANGLES[i], b = HUE_ANGLES[i + 1];
+      if (pos >= a[0] && pos <= b[0]) angle = a[1] + (b[1] - a[1]) * (pos - a[0]) / (b[0] - a[0]);
+    }
+    var cstar = chroma * Math.min(4 + 0.4 * V, 6.4), h = angle * Math.PI / 180;
+    var fx = fy + cstar * Math.cos(h) / 500, fz = fy - cstar * Math.sin(h) / 200;
+    function inv(f) { return f * f * f > 0.008856 ? f * f * f : (f - 16 / 116) / 7.787; }
+    var X = 0.95047 * inv(fx), Yr = inv(fy), Z = 1.08883 * inv(fz);
+    return [3.2406 * X - 1.5372 * Yr - 0.4986 * Z, -0.9689 * X + 1.8758 * Yr + 0.0415 * Z, 0.0557 * X - 0.2040 * Yr + 1.0570 * Z]
+      .map(function (u) {
+        u = u <= 0.0031308 ? 12.92 * u : 1.055 * Math.pow(u, 1 / 2.4) - 0.055;
+        return Math.round(Math.max(0, Math.min(1, u)) * 255);
+      });
+  }
   function soilColor(munsell) {
     var hex = munsell.match(/#[0-9a-f]{6}\b/i);
     if (hex) return hex[0];
-    var m = munsell.toUpperCase().match(/(\d+(?:\.\d+)?)\s*(YR|GY|BG|R|Y|G|B|N)?\s+(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)/);
-    if (!m) {
-      var n = munsell.toUpperCase().match(/N\s*(\d+(?:\.\d+)?)/);
-      return n ? "hsl(40 3% " + (parseFloat(n[1]) * 9.5 + 2) + "%)" : "#6b635b";
-    }
-    var step = parseFloat(m[1]), fam = m[2] || "YR", value = parseFloat(m[3]), chroma = parseFloat(m[4]);
-    var start = { R: -10, YR: 12, Y: 34, GY: 60, G: 120, BG: 170, B: 205, N: 40 }[fam];
-    var hue = start + step * 2.1;
-    var sat = fam === "N" ? 3 : Math.min(chroma * 9, 70);
-    return "hsl(" + hue.toFixed(0) + " " + sat.toFixed(0) + "% " + (value * 9.5 + 2).toFixed(0) + "%)";
+    var up = munsell.toUpperCase(), rgb;
+    // Gley chart notation: "GLEY1 5/10Y" is 10Y 5/1, "GLEY1 5/N" is N 5/.
+    var gley = up.match(/GLEY\s*\d\s+(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)?\s*(GY|BG|PB|Y|G|B|N)/);
+    if (gley) up = gley[3] === "N" ? "N " + gley[1] + "/" : (gley[2] || "5") + gley[3] + " " + gley[1] + "/1";
+    var m = up.match(/(\d+(?:\.\d+)?)\s*(YR|GY|BG|PB|RP|R|Y|G|B|P)\s+(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)/);
+    var n = up.match(/\bN\s*(\d+(?:\.\d+)?)/);
+    if (m) rgb = munsellRGB(parseFloat(m[1]), m[2], parseFloat(m[3]), parseFloat(m[4]));
+    else if (n) rgb = munsellRGB(0, "Y", parseFloat(n[1]), 0);
+    else return "#6b635b";
+    return "rgb(" + rgb.join(", ") + ")";
   }
+  window.soilColor = soilColor;
 
   function depthOf(soil) {
     var h = soil.horizons;
@@ -117,7 +142,7 @@
           var hz = horizonNames.indexOf(r[0]) > -1 ? ' data-hz="' + esc(r[0]) + '"' : "";
           t += "<tr" + hz + ">";
           r.forEach(function (c, k) {
-            var chip = /^\d+(\.\d+)?\s*(YR|Y|R|GY|G|BG|B)\s+\d+(\.\d+)?\s*\/\s*\d+/i.test(c)
+            var chip = /^(\d+(\.\d+)?\s*(YR|GY|BG|PB|RP|Y|R|G|B|P)\s+\d+(\.\d+)?\s*\/\s*\d+|N\s*\d+(\.\d+)?\s*\/)/i.test(c)
               ? '<span class="chip" style="background:' + soilColor(c) + '"></span>' : "";
             t += (k === 0 ? '<th scope="row">' : "<td>") + chip + inline(c) + (k === 0 ? "</th>" : "</td>");
           });

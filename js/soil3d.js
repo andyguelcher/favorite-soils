@@ -1,7 +1,9 @@
 /* ------------------------------------------------------------------
    Favorite Soils Report: the 3D soil monolith on each soil page.
    Nobody needs to edit this file. The model draws itself from
-   soil.txt (horizons, depths, colours) and the DRoCTS+ table in
+   soil.txt (horizons, depths, colours), the official series
+   description pasted into osd.txt if there is one (structure,
+   redox features, roots, boundaries), and the DRoCTS+ table in
    page.md (texture, structure, rocks, HCl, pH). A soil with no
    horizons yet, or a browser without WebGL, gets nothing extra.
 ------------------------------------------------------------------- */
@@ -110,45 +112,204 @@ function rng(seed) {
   };
 }
 
+/* ---------- the official series description, if pasted into osd.txt ---------- */
+// Longest names first, so "fine sandy loam" wins over "sandy loam" and "loam".
+const OSD_TEXTURES = [
+  ["very fine sandy loam", "vfsl"], ["fine sandy loam", "fsl"], ["coarse sandy loam", "cosl"],
+  ["loamy very fine sand", "lvfs"], ["loamy fine sand", "lfs"], ["loamy coarse sand", "lcos"], ["loamy sand", "ls"],
+  ["sandy clay loam", "scl"], ["silty clay loam", "sicl"], ["sandy loam", "sl"], ["silt loam", "sil"], ["clay loam", "cl"],
+  ["silty clay", "sic"], ["sandy clay", "sc"], ["very fine sand", "vfs"], ["fine sand", "fs"], ["coarse sand", "cos"],
+  ["loam", "l"], ["silt", "si"], ["clay", "c"], ["sand", "s"]
+];
+const OSD_STRUCTURES = [
+  ["subangular blocky", "sbk"], ["angular blocky", "abk"], ["granular", "gr"], ["prismatic", "pr"], ["columnar", "cpr"],
+  ["platy", "pl"], ["wedge", "abk"], ["single grain", "sg"], ["massive", "ma"]
+];
+const SIZE_WORDS = /\b(extremely coarse|very coarse|very thick|very fine|very thin|coarse|thick|medium|fine|thin)\b/;
+const SIZE_CLASS = { "very fine": 0, "very thin": 0, fine: 1, thin: 1, medium: 2, coarse: 3, thick: 3, "very coarse": 4, "very thick": 4, "extremely coarse": 5 };
+// Ped size in cm for each size class, by structure type (USDA field book classes).
+const PED_CM = {
+  gr: [0.05, 0.15, 0.35, 0.75, 1.2, 1.5], pl: [0.05, 0.15, 0.35, 0.75, 1.2, 1.5],
+  sbk: [0.4, 0.75, 1.5, 3.5, 6, 8], abk: [0.4, 0.75, 1.5, 3.5, 6, 8],
+  pr: [0.7, 1.5, 3.5, 7.5, 15, 25], cpr: [0.7, 1.5, 3.5, 7.5, 15, 25]
+};
+const GRADE = { weak: 1, moderate: 2, strong: 3 };
+const ABUNDANCE = { "very few": 0.004, few: 0.012, common: 0.06, many: 0.22 };   // share of the face
+const FEATURE_R = { fine: 0.2, medium: 0.5, coarse: 0.9, "very coarse": 1.4, "extremely coarse": 2 };   // blob radius, cm
+const ROOTS_PER_CM = { "very few": 0.08, few: 0.25, common: 0.6, many: 1.2 };
+const ROOT_W = { "very fine": 0.04, fine: 0.1, medium: 0.25, coarse: 0.6, "very coarse": 1 };
+const BOUNDARY_CM = { "very abrupt": 0.3, abrupt: 1, clear: 3.5, gradual: 10, diffuse: 20 };
+const BOUNDARY_WAVE = { smooth: [0.3, 40], wavy: [2.5, 20], irregular: [4, 7], broken: [3, 10] };   // amplitude, wavelength (cm)
+
+function munsellsIn(text) {
+  return [...text.matchAll(/\(?\s*(\d+(?:\.\d+)?\s*(?:YR|GY|BG|PB|RP|R|Y|G|B|P)|N)\s*(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)?\s*\)/gi)]
+    .map((m) => m[1].toUpperCase().replace(/\s+/g, "") + " " + m[2] + "/" + (m[3] || ""));
+}
+
+// Pull out the horizon paragraphs ("Ap--0 to 23 cm; black (10YR 2/1) ...") and ignore everything else.
+function parseOSD(text) {
+  const out = {};
+  const head = /^\s*([0-9]*[A-Z][A-Za-z0-9'’/&]*)\s*-{1,2}\s*(\d+(?:\.\d+)?)\s*to\s*(\d+(?:\.\d+)?)\s*(cm|centimeters|in|inches)\b[^;]*;\s*(.*)$/;
+  let cur = null;
+  text.replace(/\r/g, "").split("\n").forEach((line) => {
+    const m = line.match(head);
+    if (m) {
+      cur = { name: m[1], text: m[5] };
+      out[m[1]] = cur;
+    } else if (cur && line.trim() && !/^[A-Z][A-Z ]{4,}:/.test(line.trim())) {
+      cur.text += " " + line.trim();
+    } else {
+      cur = null;
+    }
+  });
+  Object.keys(out).forEach((k) => { out[k] = readHorizon(out[k].text); });
+  return out;
+}
+
+function readHorizon(text) {
+  const o = { features: [], structures: [] };
+  const clauses = text.split(";").map((c) => c.trim().replace(/\.$/, "")).filter(Boolean);
+  const first = (clauses[0] || "").toLowerCase().split(",")[0];
+  const tx = OSD_TEXTURES.find(([n]) => new RegExp("\\b" + n + "\\b").test(first));
+  o.texture = tx ? tx[1] : null;
+  if (/\bvery (gravelly|cobbly|channery|stony)\b/.test(first)) o.rocks = 45;
+  else if (/\b(gravelly|cobbly|channery|stony)\b/.test(first)) o.rocks = 22;
+
+  clauses.slice(1).forEach((raw) => {
+    const c = raw.toLowerCase();
+    let m;
+    if (/structure\b|^massive|^single grain/.test(c)) {
+      o.structureText = raw;
+      o.partings = /partings/.test(c);
+      o.structures = c.split(/parting to/).map((part) => {
+        const type = OSD_STRUCTURES.find(([n]) => part.includes(n));
+        const size = part.match(SIZE_WORDS), grade = part.match(/\b(weak|moderate|strong)\b/);
+        return type && { type: type[1], grade: grade ? GRADE[grade[1]] : 2, size: size ? SIZE_CLASS[size[1]] : 2 };
+      }).filter(Boolean);
+      return;
+    }
+    if ((m = c.match(/(\d+(?:\.\d+)?)\s*(?:to\s*\d+(?:\.\d+)?\s*)?percent\s+[a-z ]*?(rock fragments|fragments|gravel|cobbles|channers|stones|pebbles)/))) {
+      o.rocks = parseFloat(m[1]);
+      return;
+    }
+    if ((m = c.match(/\b(very few|few|common|many)\s+((?:very fine|fine|medium|very coarse|coarse)(?:\s*(?:and|,)\s*(?:very fine|fine|medium|very coarse|coarse))*)\s+roots/))) {
+      const widths = [...m[2].matchAll(/very fine|very coarse|fine|medium|coarse/g)].map((x) => ROOT_W[x[0]]);
+      o.roots = { text: raw, per: ROOTS_PER_CM[m[1]], width: Math.max(...widths) };
+      return;
+    }
+    if ((m = c.match(/(very abrupt|abrupt|clear|gradual|diffuse)\s+(smooth|wavy|irregular|broken)\s+boundary/))) {
+      o.boundary = { text: m[1] + " " + m[2], width: BOUNDARY_CM[m[1]], wave: BOUNDARY_WAVE[m[2]] };
+      return;
+    }
+    if ((m = c.match(/(noneffervescent|very slightly effervescent|slightly effervescent|strongly effervescent|violently effervescent)/))) {
+      o.hcl = m[1];
+      return;
+    }
+    if (/^(ultra|extremely|very strongly|strongly|moderately|slightly) (acid|alkaline)$|^neutral$/.test(c)) {
+      o.reaction = c;
+      return;
+    }
+    const kind = /depletion/.test(c) ? "depl"
+      : /coating|films|skeletans/.test(c) ? "coat"
+      : /carbonate|calcium|lime\b/.test(c) ? "carb"
+      : /iron|manganese|redox|mottle|concentration|concretion|nodule|masses/.test(c) ? "conc" : null;
+    if (!kind) return;
+    const amounts = [...c.matchAll(/\b(very few|few|common|many)\b/g)].map((x) => ABUNDANCE[x[1]]);
+    const sizes = [...c.matchAll(/\b(extremely coarse|very coarse|fine|medium|coarse)\b/g)].map((x) => FEATURE_R[x[1]]);
+    o.features.push({
+      kind, text: raw, colors: munsellsIn(raw),
+      amount: amounts.length ? Math.max(...amounts) : ABUNDANCE.common,
+      sizes: sizes.length ? sizes : [0.5],
+      faces: /faces|surfaces|pores|channels/.test(c) && !/in the matrix/.test(c)
+    });
+  });
+  return o;
+}
+
+/* ---------- what each horizon should look like ---------- */
+// From the OSD when there is one, otherwise from the table and the horizon name.
+function lookFor(hz, row, osd) {
+  if (!row && !osd) return null;
+  const parts = nameParts(hz.name), has = (x) => parts.suffix.includes(x);
+  const L = { texture: null, structures: [], partings: false, rocks: 0, roots: null, features: [], boundary: null, dense: false };
+  if (row) {
+    L.texture = codeIn(row.texture, TEXTURES);
+    const st = codeIn(row.structure, STRUCTURES);
+    if (st) L.structures = [{ type: st, grade: 2, size: 2 }];
+    L.rocks = parseFloat((row.rocks.match(/\d+(\.\d+)?/) || ["0"])[0]);
+  }
+  if (osd) {
+    L.texture = osd.texture || L.texture;
+    if (osd.structures.length) L.structures = osd.structures;
+    L.partings = osd.partings;
+    if (osd.rocks !== undefined) L.rocks = osd.rocks;
+    L.roots = osd.roots || null;
+    L.features = osd.features.map((f) => ({ ...f, colors: f.colors.map((c) => rgbOf(window.soilColor(c))) }));
+    L.boundary = osd.boundary || null;
+    return L;
+  }
+  if (parts.master.startsWith("A")) L.roots = { per: 0.4, width: 0.08 };
+  if (has("g")) {
+    const rust = rgbOf(cssVar("--rust", "#9a4a22"));
+    L.features = [
+      { kind: "conc", amount: 0.05, sizes: [0.4, 0.8], colors: [rust, mix(rust, [196, 116, 48], 0.5)] },
+      { kind: "depl", amount: 0.015, sizes: [0.6], colors: [shade(rgbOf(hz.color), 0.3)] }
+    ];
+  }
+  L.boundary = has("p") ? { width: 0, wave: [0.15, 40], sharp: true } : { width: 1.8, wave: [0.6, 15] };
+  L.dense = has("d");
+  return L;
+}
+
 /* ---------- painting one horizon face ---------- */
 // s is pixels per centimetre. Everything below is measured in cm and scaled.
 // plan = true paints the face seen from above or below instead of from the side.
-function paintFace(hz, row, wcm, hcm, s, below, plan) {
+// The matrix is always exactly the horizon's Munsell colour; patterns vary around it.
+function paintFace(hz, look, wcm, hcm, s, below, plan) {
   const cv = document.createElement("canvas");
   cv.width = Math.max(8, Math.round(wcm * s));
   cv.height = Math.max(8, Math.round(hcm * s));
   const w = cv.width, h = cv.height, ctx = cv.getContext("2d");
   const r = rng(hz.name + hz.top + hz.munsell + (plan ? "plan" : ""));
-  const parts = nameParts(hz.name);
-  let base = rgbOf(hz.color);
-
-  if (!row) {
-    ctx.fillStyle = css(base);
-    ctx.fillRect(0, 0, w, h);
-    return cv;
-  }
-
-  const has = (x) => parts.suffix.includes(x);
-  if (has("g")) {
-    const grey = (base[0] + base[1] + base[2]) / 3;
-    base = mix(base, [grey, grey, grey * 1.02], 0.45);
-  }
-  if (has("d")) base = shade(base, -0.08);
+  const base = rgbOf(hz.color);
   ctx.fillStyle = css(base);
   ctx.fillRect(0, 0, w, h);
+  if (!look) { cv.clean = cv; return cv; }
 
-  const texture = codeIn(row.texture, TEXTURES);
-  let structure = codeIn(row.structure, STRUCTURES) || "ma";
-  // From above, prisms show as polygonal tops and plates show their flat faces.
-  const prismTops = plan && (structure === "pr" || structure === "cpr");
-  if (prismTops) structure = "abk";
-  if (plan && structure === "pl") structure = "ma";
-  const grain = SANDY.includes(texture) ? "sandy" : CLAYEY.includes(texture) ? "clayey" : "loamy";
-  const crack = has("d") ? 0.6 : 1;
+  const grain = SANDY.includes(look.texture) ? "sandy" : CLAYEY.includes(look.texture) ? "clayey" : "loamy";
+  const pick = (list) => list[Math.floor(r() * list.length)];
+  const jitterLine = (pts, j) => pts.map(([x, y]) => [x + (r() - 0.5) * j, y + (r() - 0.5) * j]);
+  const split = (a, b, steps) => {
+    const pts = [];
+    for (let i = 0; i <= steps; i++) pts.push([a[0] + (b[0] - a[0]) * i / steps, a[1] + (b[1] - a[1]) * i / steps]);
+    return pts;
+  };
+  const stroke = (pts, width, color) => {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    pts.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+    ctx.stroke();
+  };
+  function blob(x, y, rad, c, alpha) {
+    if (rad < 4) {
+      ctx.fillStyle = css(c, alpha * 0.8);
+      ctx.beginPath(); ctx.arc(x, y, rad * 0.8, 0, Math.PI * 2); ctx.fill();
+      return;
+    }
+    for (let k = 0; k < 3; k++) {
+      const bx = x + (r() - 0.5) * rad, by = y + (r() - 0.5) * rad, br = rad * (0.6 + r() * 0.6);
+      const g = ctx.createRadialGradient(bx, by, 0, bx, by, br);
+      g.addColorStop(0, css(c, alpha));
+      g.addColorStop(0.55, css(c, alpha * 0.6));
+      g.addColorStop(1, css(c, 0));
+      ctx.fillStyle = g;
+      ctx.fillRect(bx - br, by - br, br * 2, br * 2);
+    }
+  }
 
-  // Soft blotches: clay looks smooth and dense, so it gets broad, quiet variation.
-  const blotches = grain === "clayey" ? 0.012 : 0.006;
-  for (let i = 0, n = Math.round(wcm * hcm * blotches); i < n; i++) {
+  // Broad, quiet variation, balanced so the average stays on the Munsell colour.
+  for (let i = 0, n = Math.round(wcm * hcm * (grain === "clayey" ? 0.012 : 0.006)); i < n; i++) {
     const x = r() * w, y = r() * h, rad = (3 + r() * 6) * s;
     const g = ctx.createRadialGradient(x, y, 0, x, y, rad);
     g.addColorStop(0, css(shade(base, (r() - 0.5) * 0.14), 0.5));
@@ -157,182 +318,163 @@ function paintFace(hz, row, wcm, hcm, s, below, plan) {
     ctx.fillRect(x - rad, y - rad, rad * 2, rad * 2);
   }
 
-  // Structure: the shape of the peds and the cracks between them.
-  const crackColor = css(shade(base, -0.55), 0.75);
-  const lightEdge = css(shade(base, 0.22), 0.35);
-  function wobblyLine(points, width, jitter) {
-    ctx.beginPath();
-    points.forEach(([x, y], i) => {
-      const jx = (r() - 0.5) * jitter, jy = (r() - 0.5) * jitter;
-      if (i === 0) ctx.moveTo(x + jx, y + jy); else ctx.lineTo(x + jx, y + jy);
-    });
-    ctx.lineWidth = width;
-    ctx.stroke();
-  }
-  function split(a, b, steps) {
-    const pts = [];
-    for (let i = 0; i <= steps; i++) pts.push([a[0] + (b[0] - a[0]) * i / steps, a[1] + (b[1] - a[1]) * i / steps]);
-    return pts;
-  }
-
-  if (structure === "sbk" || structure === "abk") {
-    const ped = (prismTops ? 7 : structure === "sbk" ? 3.6 : 4.4) * s, jit = structure === "sbk" ? 0.32 : 0.18;
-    const cols = Math.ceil(w / ped) + 2, rows = Math.ceil(h / ped) + 2, grid = [];
-    for (let j = 0; j < rows; j++) {
-      grid.push([]);
-      for (let i = 0; i < cols; i++) {
-        grid[j].push([(i - 0.5 + (r() - 0.5) * jit * 2) * ped, (j - 0.5 + (r() - 0.5) * jit * 2) * ped * 0.85]);
+  // Structure. Cracks are collected first so coatings can follow the same ped faces.
+  const cracks = [];
+  look.structures.forEach((st, k) => {
+    let type = st.type, size = PED_CM[type] ? PED_CM[type][st.size] : 0;
+    if (plan && (type === "pr" || type === "cpr")) type = "abk";      // prism tops seen from above
+    if (plan && type === "pl") return;                                 // plates seen flat on
+    const weight = (k === 0 ? 1 : 0.7) * [0, 0.4, 0.65, 0.9][st.grade];
+    if (type === "sbk" || type === "abk") {
+      const ped = Math.max(0.4, size) * s, jit = type === "sbk" ? 0.32 : 0.18;
+      const cols = Math.ceil(w / ped) + 2, rows = Math.ceil(h / ped) + 2, grid = [];
+      for (let j = 0; j < rows; j++) {
+        grid.push([]);
+        for (let i = 0; i < cols; i++) grid[j].push([(i - 0.5 + (r() - 0.5) * jit * 2) * ped, (j - 0.5 + (r() - 0.5) * jit * 2) * ped * 0.85]);
       }
-    }
-    ctx.lineJoin = structure === "sbk" ? "round" : "miter";
-    for (let j = 0; j < rows - 1; j++) {
-      for (let i = 0; i < cols - 1; i++) {
-        const q = [grid[j][i], grid[j][i + 1], grid[j + 1][i + 1], grid[j + 1][i]];
-        ctx.beginPath();
-        q.forEach(([x, y], k) => (k ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
-        ctx.closePath();
-        ctx.fillStyle = css(shade(base, (r() - 0.5) * 0.12));
-        ctx.fill();
-      }
-    }
-    const steps = structure === "sbk" ? 4 : 2, wob = (structure === "sbk" ? 0.35 : 0.15) * s;
-    for (let j = 0; j < rows; j++) {
-      for (let i = 0; i < cols; i++) {
-        if (i < cols - 1 && r() > 0.08) {
-          ctx.strokeStyle = crackColor; wobblyLine(split(grid[j][i], grid[j][i + 1], steps), Math.max(1, 0.16 * s * crack), wob);
-        }
-        if (j < rows - 1 && r() > 0.08) {
-          ctx.strokeStyle = crackColor; wobblyLine(split(grid[j][i], grid[j + 1][i], steps), Math.max(1, 0.16 * s * crack), wob);
-          ctx.strokeStyle = lightEdge; wobblyLine(split(grid[j][i], grid[j + 1][i], steps).map(([x, y]) => [x + 1.2, y]), 1, 0);
+      if (k === 0) {
+        for (let j = 0; j < rows - 1; j++) {
+          for (let i = 0; i < cols - 1; i++) {
+            ctx.beginPath();
+            [grid[j][i], grid[j][i + 1], grid[j + 1][i + 1], grid[j + 1][i]].forEach(([x, y], q) => (q ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+            ctx.fillStyle = css(shade(base, (r() - 0.5) * 0.04 * (1 + st.grade)));
+            ctx.fill();
+          }
         }
       }
-    }
-  } else if (structure === "pr" || structure === "cpr") {
-    const width = 7 * s;
-    let x = (r() - 0.5) * width;
-    const edges = [];
-    while (x < w + width) { edges.push(x); x += width * (0.7 + r() * 0.6); }
-    edges.forEach((ex, k) => {
-      if (k < edges.length - 1) {
-        ctx.fillStyle = css(shade(base, (r() - 0.5) * 0.12));
-        ctx.fillRect(ex, 0, edges[k + 1] - ex, h);
+      const steps = type === "sbk" ? 4 : 2, wob = (type === "sbk" ? 0.2 : 0.08) * ped;
+      for (let j = 0; j < rows; j++) {
+        for (let i = 0; i < cols; i++) {
+          if (i < cols - 1 && r() > 0.1) cracks.push({ pts: jitterLine(split(grid[j][i], grid[j][i + 1], steps), wob), weight, width: 0.05 + 0.04 * st.grade });
+          if (j < rows - 1 && r() > 0.1) cracks.push({ pts: jitterLine(split(grid[j][i], grid[j + 1][i], steps), wob), weight, width: 0.05 + 0.04 * st.grade, vertical: true });
+        }
       }
-    });
-    ctx.strokeStyle = crackColor;
-    edges.forEach((ex) => {
-      const pts = [];
-      for (let y = 0; y <= h + s; y += 1.5 * s) pts.push([ex + Math.sin(y / (9 * s) + ex) * 0.5 * s, y]);
-      wobblyLine(pts, Math.max(1.2, 0.28 * s * crack), 0.25 * s);
-    });
-    // Occasional cross-breaks inside each prism.
-    edges.forEach((ex, k) => {
-      if (k >= edges.length - 1) return;
-      for (let y = (8 + r() * 10) * s; y < h; y += (10 + r() * 12) * s) {
-        ctx.strokeStyle = crackColor;
-        wobblyLine(split([ex, y], [edges[k + 1], y + (r() - 0.5) * 2 * s], 3), Math.max(1, 0.14 * s * crack), 0.3 * s);
-      }
-    });
-    if (structure === "cpr") {
-      edges.forEach((ex, k) => {
-        if (k >= edges.length - 1) return;
-        ctx.fillStyle = css(shade(base, 0.12), 0.5);
-        ctx.beginPath();
-        ctx.ellipse((ex + edges[k + 1]) / 2, 1.2 * s, (edges[k + 1] - ex) / 2.3, 1.2 * s, 0, Math.PI, 0);
-        ctx.fill();
+    } else if (type === "pr" || type === "cpr") {
+      const width = size * s, edges = [];
+      let x = (r() - 0.5) * width;
+      while (x < w + width) { edges.push(x); x += width * (0.7 + r() * 0.6); }
+      edges.forEach((ex, n) => {
+        if (k === 0 && n < edges.length - 1) {
+          ctx.fillStyle = css(shade(base, (r() - 0.5) * 0.04 * (1 + st.grade)));
+          ctx.fillRect(ex, 0, edges[n + 1] - ex, h);
+        }
+        const pts = [];
+        for (let y = 0; y <= h + s; y += 1.5 * s) pts.push([ex + Math.sin(y / (9 * s) + ex) * 0.5 * s, y]);
+        cracks.push({ pts: jitterLine(pts, 0.25 * s), weight, width: 0.08 + 0.06 * st.grade, vertical: true });
+        if (n < edges.length - 1) {
+          for (let y = width * (1 + r()); y < h; y += width * (1.5 + r())) {
+            cracks.push({ pts: jitterLine(split([ex, y], [edges[n + 1], y + (r() - 0.5) * 2 * s], 3), 0.3 * s), weight: weight * 0.8, width: 0.05 + 0.04 * st.grade });
+          }
+        }
       });
-    }
-  } else if (structure === "gr") {
-    ctx.fillStyle = css(shade(base, -0.3), 0.6);
-    ctx.fillRect(0, 0, w, h);
-    const n = Math.round((wcm * hcm) / (Math.PI * 0.42 * 0.42) * 0.9);
-    for (let i = 0; i < n; i++) {
-      const x = r() * w, y = r() * h, rad = (0.22 + r() * 0.4) * s, c = shade(base, (r() - 0.5) * 0.2);
-      ctx.fillStyle = css(c);
-      ctx.beginPath(); ctx.ellipse(x, y, rad, rad * (0.75 + r() * 0.25), r() * 3, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = css(shade(c, 0.2), 0.5);
-      ctx.beginPath(); ctx.arc(x - rad * 0.3, y - rad * 0.3, rad * 0.35, 0, Math.PI * 2); ctx.fill();
-    }
-  } else if (structure === "pl") {
-    ctx.strokeStyle = crackColor;
-    for (let y = r() * s; y < h; y += (0.9 + r() * 0.8) * s) {
-      let x = -r() * 6 * s;
-      while (x < w) {
-        const len = (4 + r() * 8) * s;
-        wobblyLine(split([x, y], [x + len, y + (r() - 0.5) * 0.6 * s], 4), Math.max(1, 0.1 * s * crack), 0.15 * s);
-        x += len + (0.8 + r() * 2) * s;
+    } else if (type === "gr") {
+      const rad = Math.max(0.12, size / 2), cover = 0.45 + 0.15 * st.grade;
+      ctx.fillStyle = css(shade(base, -0.35), 0.12 * st.grade * (k === 0 ? 1 : 0.6));
+      ctx.fillRect(0, 0, w, h);
+      for (let i = 0, n = Math.min(12000, Math.round(wcm * hcm * cover / (Math.PI * rad * rad))); i < n; i++) {
+        const x = r() * w, y = r() * h, rr = rad * (0.6 + r() * 0.8) * s, c = shade(base, (r() - 0.45) * 0.18);
+        ctx.fillStyle = css(c);
+        // Crumbs only a pixel or two across are drawn as squares: they look the same and cost far less.
+        if (rr < 2) { ctx.fillRect(x - rr, y - rr, rr * 2, rr * 2); continue; }
+        ctx.beginPath(); ctx.ellipse(x, y, rr, rr * (0.75 + r() * 0.25), r() * 3, 0, Math.PI * 2); ctx.fill();
       }
+    } else if (type === "pl") {
+      const gapCm = Math.max(0.3, size);
+      for (let y = r() * gapCm * s; y < h; y += gapCm * s * (0.8 + r() * 0.5)) {
+        let x = -r() * 6 * s;
+        while (x < w) {
+          const len = (4 + r() * 8) * s;
+          cracks.push({ pts: jitterLine(split([x, y], [x + len, y + (r() - 0.5) * 0.6 * s], 4), 0.1 * s), weight, width: 0.04 + 0.03 * st.grade });
+          x += len + (0.8 + r() * 2) * s;
+        }
+      }
+    }
+  });
+  // "Massive, with widely spaced vertical partings."
+  if (look.partings) {
+    for (let x = r() * 12 * s; x < w; x += (10 + r() * 10) * s) {
+      const pts = [];
+      for (let y = 0; y <= h + s; y += 2 * s) pts.push([x + Math.sin(y / (11 * s)) * 0.6 * s, y]);
+      cracks.push({ pts: jitterLine(pts, 0.3 * s), weight: 0.5, width: 0.07, vertical: true });
     }
   }
 
-  // Texture: sand glints as fine speckle; clay stays quiet.
+  // Features in the matrix: iron masses and depletions, in their own Munsell colours.
+  const area = wcm * hcm;
+  look.features.forEach((f) => {
+    if (!f.colors.length) return;
+    if (f.faces && cracks.length) {
+      // Coatings and carbonate on ped or prism faces follow the cracks.
+      const onVertical = f.kind === "carb" && cracks.some((c) => c.vertical);
+      const share = Math.min(0.85, f.amount * 8);
+      cracks.forEach((c) => {
+        if ((onVertical && !c.vertical) || r() > share) return;
+        ctx.setLineDash(f.kind === "carb" ? [(0.6 + r()) * s, (0.8 + r() * 2) * s] : []);
+        stroke(c.pts, Math.max(1.5, (f.kind === "carb" ? 0.35 : 0.3) * s), css(pick(f.colors), f.kind === "carb" ? 0.75 : 0.55));
+      });
+      ctx.setLineDash([]);
+      return;
+    }
+    const avg = f.sizes.reduce((a, b) => a + b, 0) / f.sizes.length;
+    for (let i = 0, n = Math.min(1500, Math.round(f.amount * area / (Math.PI * avg * avg))); i < n; i++) {
+      blob(r() * w, r() * h, pick(f.sizes) * s * (0.7 + r() * 0.6), pick(f.colors), f.kind === "depl" ? 0.7 : 0.85);
+    }
+  });
+
+  // The cracks themselves, over the coatings.
+  const crackColor = shade(base, -0.45);
+  cracks.forEach((c) => stroke(c.pts, Math.max(1, c.width * s), css(crackColor, 0.6 * c.weight)));
+
+  // Texture: sand glints as fine speckle; clay stays quiet. Balanced lighter and darker.
   const speck = { sandy: [0.16, 0.26], loamy: [0.06, 0.16], clayey: [0.015, 0.08] }[grain];
   const dot = Math.max(1, Math.round(0.12 * s));
-  for (let i = 0, n = Math.round(w * h * speck[0] / (dot * dot)); i < n; i++) {
-    ctx.fillStyle = css(shade(base, (r() - 0.4) * speck[1] * 2), 0.6);
+  for (let i = 0, n = Math.min(20000, Math.round(w * h * speck[0] / (dot * dot))); i < n; i++) {
+    ctx.fillStyle = css(shade(base, (r() - 0.5) * speck[1] * 2), 0.6);
     ctx.fillRect(r() * w, r() * h, dot, dot);
   }
 
-  // A densified layer gets fine flattened laminae.
-  if (has("d") && !plan) {
-    ctx.strokeStyle = css(shade(base, -0.4), 0.18);
+  // Without an OSD, a "d" horizon gets fine flattened laminae to read as dense.
+  if (look.dense && !plan) {
     for (let y = r() * s; y < h; y += (0.5 + r() * 0.5) * s) {
-      wobblyLine(split([0, y], [w, y + (r() - 0.5) * s], 8), Math.max(1, 0.06 * s), 0.12 * s);
+      stroke(jitterLine(split([0, y], [w, y + (r() - 0.5) * s], 8), 0.12 * s), Math.max(1, 0.06 * s), css(shade(base, -0.4), 0.18));
     }
   }
 
-  // Gleyed: grey with rusty redox mottles and paler depletions.
-  if (has("g")) {
-    const rust = rgbOf(cssVar("--rust", "#9a4a22"));
-    for (let i = 0, n = Math.round((wcm * hcm) / 55); i < n; i++) {
-      const x = r() * w, y = r() * h, depletion = r() < 0.25;
-      const c = depletion ? shade(base, 0.3) : mix(rust, [196, 116, 48], r() * 0.6);
-      for (let k = 0; k < 3; k++) {
-        const bx = x + (r() - 0.5) * 1.5 * s, by = y + (r() - 0.5) * 1.5 * s, rad = (0.5 + r() * 1.6) * s;
-        const g = ctx.createRadialGradient(bx, by, 0, bx, by, rad);
-        g.addColorStop(0, css(c, depletion ? 0.35 : 0.7));
-        g.addColorStop(0.6, css(c, depletion ? 0.18 : 0.35));
-        g.addColorStop(1, css(c, 0));
-        ctx.fillStyle = g;
-        ctx.fillRect(bx - rad, by - rad, rad * 2, rad * 2);
+  // Roots: threads wandering down from the side, cut ends from above.
+  if (look.roots) {
+    const rootColor = [214, 196, 158], rw = Math.max(0.7, look.roots.width * s);
+    if (plan) {
+      for (let i = 0, n = Math.round(look.roots.per * area * 0.4); i < n; i++) {
+        ctx.fillStyle = css(rootColor, 0.4 + r() * 0.3);
+        ctx.beginPath(); ctx.arc(r() * w, r() * h, rw * 0.8, 0, Math.PI * 2); ctx.fill();
       }
-    }
-  }
-
-  // A horizons: fine root threads, wandering down from the top. From above, cut root ends.
-  if (parts.master.startsWith("A") && plan) {
-    for (let i = 0, n = Math.round(wcm * hcm / 6); i < n; i++) {
-      ctx.fillStyle = css([214, 196, 158], 0.35 + r() * 0.35);
-      ctx.beginPath(); ctx.arc(r() * w, r() * h, Math.max(0.7, (0.05 + r() * 0.1) * s), 0, Math.PI * 2); ctx.fill();
-    }
-  } else if (parts.master.startsWith("A")) {
-    const root = [214, 196, 158];
-    for (let i = 0, n = Math.round(wcm / 2.4); i < n; i++) {
-      let x = r() * w, y = r() * h * 0.25, a = Math.PI / 2 + (r() - 0.5) * 0.6;
-      const len = (0.4 + r() * 0.6) * h;
-      ctx.strokeStyle = css(root, 0.35 + r() * 0.3);
-      ctx.lineWidth = Math.max(0.7, (0.05 + r() * 0.08) * s);
-      ctx.beginPath(); ctx.moveTo(x, y);
-      for (let d = 0; d < len; d += 0.8 * s) {
-        a += (r() - 0.5) * 0.5;
-        a = Math.max(0.35, Math.min(Math.PI - 0.35, a));
-        x += Math.cos(a) * 0.8 * s; y += Math.sin(a) * 0.8 * s;
-        ctx.lineTo(x, y);
-        if (r() < 0.05) {
-          const bx = x, by = y, ba = a + (r() < 0.5 ? -0.8 : 0.8);
-          ctx.moveTo(bx + Math.cos(ba) * 2 * s, by + Math.sin(ba) * 2 * s);
-          ctx.lineTo(bx, by);
+    } else {
+      for (let i = 0, n = Math.max(1, Math.round(look.roots.per * wcm)); i < n; i++) {
+        let x = r() * w, y = r() * h * 0.3, a = Math.PI / 2 + (r() - 0.5) * 0.6;
+        const len = (0.4 + r() * 0.6) * h;
+        ctx.strokeStyle = css(rootColor, 0.35 + r() * 0.3);
+        ctx.lineWidth = rw * (0.6 + r() * 0.6);
+        ctx.beginPath(); ctx.moveTo(x, y);
+        for (let d = 0; d < len; d += 0.8 * s) {
+          a = Math.max(0.35, Math.min(Math.PI - 0.35, a + (r() - 0.5) * 0.5));
+          x += Math.cos(a) * 0.8 * s; y += Math.sin(a) * 0.8 * s;
+          ctx.lineTo(x, y);
+          if (r() < 0.05) {
+            const ba = a + (r() < 0.5 ? -0.8 : 0.8);
+            ctx.moveTo(x + Math.cos(ba) * 2 * s, y + Math.sin(ba) * 2 * s);
+            ctx.lineTo(x, y);
+          }
         }
+        ctx.stroke();
       }
-      ctx.stroke();
     }
   }
 
   // Rocks: scatter about that share of the face with small pebbles.
-  const pct = Math.min(60, parseFloat((row.rocks.match(/\d+(\.\d+)?/) || ["0"])[0]));
   const stones = [[128, 122, 112], [104, 97, 87], [146, 134, 112], [86, 82, 77], [120, 102, 82]];
-  for (let i = 0, n = Math.round((pct / 100) * (wcm * hcm) / 2.4); i < n; i++) {
+  for (let i = 0, n = Math.round((Math.min(60, look.rocks || 0) / 100) * area / 2.4); i < n; i++) {
     const x = r() * w, y = r() * h, rx = (0.45 + r() * 1.1) * s, ry = rx * (0.55 + r() * 0.4), rot = r() * Math.PI;
-    const c = stones[Math.floor(r() * stones.length)];
+    const c = pick(stones);
     ctx.fillStyle = "rgba(0,0,0,0.3)";
     ctx.beginPath(); ctx.ellipse(x + 0.12 * s, y + 0.15 * s, rx, ry, rot, 0, Math.PI * 2); ctx.fill();
     const g = ctx.createRadialGradient(x - rx * 0.35, y - ry * 0.4, 0, x, y, rx);
@@ -342,25 +484,45 @@ function paintFace(hz, row, wcm, hcm, s, below, plan) {
     ctx.beginPath(); ctx.ellipse(x, y, rx, ry, rot, 0, Math.PI * 2); ctx.fill();
   }
 
-  // The lower boundary: sharp under a plow layer, a soft blend otherwise.
-  if (plan) {
-    // no boundary seen from above
-  } else if (has("p")) {
-    ctx.fillStyle = css(shade(base, -0.4));
-    ctx.fillRect(0, h - Math.max(2, 0.3 * s), w, Math.max(2, 0.3 * s));
-    ctx.strokeStyle = css(shade(base, -0.3), 0.35);
-    for (let y = h - 1.6 * s; y < h - 0.3 * s; y += 0.35 * s) {
-      wobblyLine(split([0, y], [w, y], 10), Math.max(1, 0.07 * s), 0.08 * s);
-    }
-  } else if (below) {
-    const band = Math.min(1.8 * s, h * 0.3), next = rgbOf(below.color);
+  // Keep a copy without the lower boundary, for the horizon above to blend into.
+  if (!plan) {
+    cv.clean = document.createElement("canvas");
+    cv.clean.width = w;
+    cv.clean.height = h;
+    cv.clean.getContext("2d").drawImage(cv, 0, 0);
+  }
+
+  // The lower boundary: the horizon below, with its own texture, reaches up into
+  // this one, as wide and as wavy as the description says (abrupt is a crisp
+  // edge, gradual a long blend). "below" is that horizon's face, before its own boundary.
+  if (!plan && below && look.boundary) {
+    const [amp, wave] = look.boundary.wave;
+    const blend = Math.min(look.boundary.width, hcm * 0.45) * s;
+    const band = Math.min(h, below.height, Math.ceil(amp * s + blend + 2));
+    const piece = document.createElement("canvas"), mask = document.createElement("canvas");
+    piece.width = mask.width = w;
+    piece.height = mask.height = band;
+    const pc = piece.getContext("2d"), mc = mask.getContext("2d"), phase = r() * 6;
+    pc.drawImage(below, 0, 0, Math.min(w, below.width), band, 0, 0, w, band);
     for (let x = 0; x < w; x += 2) {
-      const top = h - band * (0.6 + 0.4 * Math.sin(x / (5 * s) + r() * 0.3));
-      const g = ctx.createLinearGradient(0, top, 0, h);
-      g.addColorStop(0, css(next, 0));
-      g.addColorStop(1, css(next, 0.75));
-      ctx.fillStyle = g;
-      ctx.fillRect(x, top, 2, h - top);
+      const wobble = Math.sin((x / (wave * s)) * Math.PI * 2 + phase) * 0.5 + 0.5 + (r() - 0.5) * 0.15;
+      const edge = band - Math.max(0.15 * s, amp * s * wobble);
+      mc.fillStyle = "#000";
+      mc.fillRect(x, edge, 2, band - edge);
+      if (blend > 1) {
+        const g = mc.createLinearGradient(0, edge - blend, 0, edge);
+        g.addColorStop(0, "rgba(0,0,0,0)");
+        g.addColorStop(1, "rgba(0,0,0,0.85)");
+        mc.fillStyle = g;
+        mc.fillRect(x, edge - blend, 2, blend);
+      }
+    }
+    pc.globalCompositeOperation = "destination-in";
+    pc.drawImage(mask, 0, 0);
+    ctx.drawImage(piece, 0, h - band);
+    if (look.boundary.sharp) {
+      ctx.fillStyle = css(shade(base, -0.45));
+      ctx.fillRect(0, h - Math.max(2, 0.25 * s), w, Math.max(2, 0.25 * s));
     }
   }
   return cv;
@@ -415,7 +577,7 @@ function describe(soil, table) {
 }
 
 /* ---------- the page section ---------- */
-function buildSection(soil, table) {
+function buildSection(soil, table, hasOSD) {
   const section = document.createElement("section");
   section.className = "monolith-section";
   section.innerHTML =
@@ -429,7 +591,9 @@ function buildSection(soil, table) {
     '<button type="button" data-reset>Reset view</button>' +
     "</div>" +
     '<div class="card" data-card></div>' +
-    "<figcaption>Depths are to scale; width and thickness are not. Colours approximate the moist Munsell colours, and the surface patterns are drawn from the texture, structure and rock codes in the table.</figcaption>" +
+    "<figcaption>Depths are to scale; width and thickness are not. Each horizon is its moist Munsell colour, and the surface patterns are drawn from " +
+    (hasOSD ? "the official series description (structure, redox features, roots and boundaries) and the DRoCTS+ table." : "the texture, structure and rock codes in the table.") +
+    "</figcaption>" +
     "</figure>";
   section.querySelector(".stage").setAttribute("aria-label", describe(soil, table));
 
@@ -441,7 +605,18 @@ function buildSection(soil, table) {
   return section;
 }
 
-function fillCard(card, soil, table, name) {
+const FEATURE_LABEL = { conc: "Iron masses", depl: "Iron depletions", coat: "Coatings", carb: "Carbonate" };
+function featureLabel(f) {
+  const t = f.text.toLowerCase();
+  if (f.kind === "coat") return /organic/.test(t) ? "Organic coatings" : /clay/.test(t) ? "Clay films" : "Coatings";
+  if (f.kind === "conc") return /manganese/.test(t) ? "Manganese masses" : /concretion|nodule/.test(t) ? "Concretions" : /mottle/.test(t) ? "Mottles" : "Iron masses";
+  return FEATURE_LABEL[f.kind];
+}
+function osdFor(osd, name) {
+  return osd[name] || osd[Object.keys(osd).find((k) => k.toLowerCase() === name.toLowerCase())] || null;
+}
+
+function fillCard(card, soil, table, osd, name) {
   card.textContent = "";
   const hz = soil.horizons.find((h) => h.name === name);
   if (!hz) {
@@ -462,13 +637,15 @@ function fillCard(card, soil, table, name) {
   card.appendChild(title);
 
   const row = table[hz.name] || {};
+  const described = osdFor(osd, hz.name);
   const facts = [
     ["Depth", hz.top + "–" + hz.bottom + " cm (" + Math.round(hz.top / IN) + "–" + Math.round(hz.bottom / IN) + " in)"],
     ["Colour", hz.munsell ? hz.munsell + " moist" : ""],
     ["Texture", spell(row.texture, TEXTURES)],
     ["Structure", spell(row.structure, STRUCTURES)],
     ["Rocks", row.rocks ? row.rocks + (/^[\d.]+$/.test(row.rocks) ? "%" : "") : ""],
-    ["HCl", spell(row.hcl, HCL)],
+    ["HCl", row.hcl && !codeIn(row.hcl, HCL) && described && described.hcl
+      ? row.hcl + " (code not recognised; the OSD says " + described.hcl + ")" : spell(row.hcl, HCL)],
     ["pH", row.ph]
   ];
   const dl = document.createElement("dl");
@@ -486,10 +663,37 @@ function fillCard(card, soil, table, name) {
     dl.append(dt, dd);
   });
   card.appendChild(dl);
+
+  if (!described) return;
+  const head = document.createElement("h4");
+  head.textContent = "From the official series description";
+  const more = document.createElement("dl");
+  const add = (k, v, colors) => {
+    if (!v) return;
+    const dt = document.createElement("dt"), dd = document.createElement("dd");
+    dt.textContent = k;
+    (colors || []).forEach((c) => {
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      chip.style.background = window.soilColor(c);
+      chip.title = c;
+      dd.appendChild(chip);
+    });
+    dd.appendChild(document.createTextNode(v));
+    more.append(dt, dd);
+  };
+  add("Structure", described.structureText);
+  described.features.forEach((f) => {
+    const amount = (f.text.toLowerCase().match(/\b(very few|few|common|many)\b/) || [""])[0];
+    add(featureLabel(f), [amount, f.colors.join(", ")].filter(Boolean).join(", "), f.colors);
+  });
+  add("Roots", described.roots && described.roots.text);
+  add("Boundary", described.boundary && described.boundary.text + " to the horizon below");
+  card.append(head, more);
 }
 
 /* ---------- the 3D scene ---------- */
-async function buildModel(section, soil, table, page, pending) {
+async function buildModel(section, soil, table, osd, page, pending) {
   const THREE = await import("three");
   const { OrbitControls } = await import("three/addons/controls/OrbitControls.js");
   try { await document.fonts.load('500 20px "IBM Plex Mono"'); } catch (e) { /* the fallback font is fine */ }
@@ -511,8 +715,9 @@ async function buildModel(section, soil, table, page, pending) {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, 1, 1, D * 40);
-  scene.add(new THREE.HemisphereLight(0xfff8ec, 0x7d7466, 2.2));
-  const sun = new THREE.DirectionalLight(0xffffff, 1.5);
+  // Calibrated so a face turned to the viewer shows its true Munsell colour.
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x7d7466, 2.9));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.95);
   sun.position.set(-0.6, 0.8, 1).multiplyScalar(D);
   scene.add(sun);
 
@@ -529,10 +734,14 @@ async function buildModel(section, soil, table, page, pending) {
 
   const model = new THREE.Group();
   scene.add(model);
+  // Paint from the bottom up, so each face can blend into the one below it.
+  const looks = hzs.map((hz) => lookFor(hz, table[hz.name], osdFor(osd, hz.name)));
+  const faces = [];
+  for (let i = hzs.length - 1; i >= 0; i--) faces[i] = paintFace(hzs[i], looks[i], W, hzs[i].bottom - hzs[i].top, s, faces[i + 1] && faces[i + 1].clean, false);
   const slabs = hzs.map((hz, i) => {
     const h = hz.bottom - hz.top;
-    const face = paintFace(hz, table[hz.name], W, h, s, hzs[i + 1]);
-    const plan = tex(paintFace(hz, table[hz.name], W, T, s, null, true));
+    const look = looks[i], face = faces[i];
+    const plan = tex(paintFace(hz, look, W, T, s / 2, null, true));
     const front = tex(labelled(face, hz.name, s, h));
     const back = tex(face);
     const side = T / W;
@@ -640,7 +849,7 @@ async function buildModel(section, soil, table, page, pending) {
       m.userData.goal.lift = on ? T * 0.45 : 0;
       m.userData.goal.dim = selected && !on ? 0.55 : 1;
     });
-    fillCard(card, soil, table, selected);
+    fillCard(card, soil, table, osd, selected);
     if (!fromPage) page.show(selected);
     dirty = true;
   }
@@ -757,23 +966,30 @@ async function buildModel(section, soil, table, page, pending) {
 }
 
 /* ---------- start ---------- */
-pageReady().then((page) => {
+pageReady().then(async (page) => {
   const soil = page.soil;
   if (!soil.horizons.length || !webglWorks()) return;
-  const table = readTable();
-  const section = buildSection(soil, table);
-  fillCard(section.querySelector("[data-card]"), soil, table, null);
 
   // Remember a horizon picked in the table or column before the model is ready.
   const pending = { name: null };
   const early = (e) => { pending.name = e.detail; };
   document.addEventListener("soil:pick", early);
 
+  // The optional osd.txt next to soil.txt: the series description, pasted in.
+  const folder = document.querySelector("[data-person]").dataset.person;
+  const osdText = await fetch("content/" + folder + "/osd.txt", { cache: "no-cache" })
+    .then((r) => (r.ok ? r.text() : ""))
+    .catch(() => "");
+  const osd = parseOSD(osdText);
+  const table = readTable();
+  const section = buildSection(soil, table, soil.horizons.some((hz) => osdFor(osd, hz.name)));
+  fillCard(section.querySelector("[data-card]"), soil, table, osd, null);
+
   // Fetch Three.js only when the model is about to scroll into view.
   const watch = new IntersectionObserver((entries) => {
     if (!entries[0].isIntersecting) return;
     watch.disconnect();
-    buildModel(section, soil, table, page, pending)
+    buildModel(section, soil, table, osd, page, pending)
       .catch((err) => {
         console.warn("3D soil model could not load:", err);
         section.remove();

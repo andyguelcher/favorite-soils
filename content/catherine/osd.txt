@@ -1,0 +1,2 @@
+Optional. Paste the horizon paragraphs from the TYPICAL PEDON part of your soil's Official Series Description here, one paragraph per horizon, each starting like "Ap--0 to 23 cm;". The 3D model uses them for structure, mottles, roots and boundaries. Lines that are not horizon paragraphs, like this one, are ignored. See content/andy/osd.txt for an example.
+

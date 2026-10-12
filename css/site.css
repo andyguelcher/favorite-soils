@@ -4,21 +4,30 @@
    water blue, because FSR 2 is about where the water goes.
 ------------------------------------------------------------------- */
 :root {
-  --ground: #d9d9d4;      /* dry lakebed silt, greyed */
-  --sheet: #efeeeb;       /* the page a figure sits on */
-  --ink: #1e1a16;         /* 10YR 2/1, nearly */
-  --ink-soft: #4d453c;
-  --rule: #b8b5ae;
+  color-scheme: dark;
+  /* A dark, low-glare scheme. Soil colours are never tinted by it: the
+     profiles, chips and 3D model use the Munsell colours directly. */
+  --ground: #303234;      /* the page */
+  --sheet: #282a2c;       /* tables, figures and buttons */
+  --ink: #dedbd5;         /* text */
+  --ink-soft: #b4b1ab;
+  --rule: #4a4c4e;        /* thin dividers */
+  --line: #807b6f;        /* borders and section rules */
+  --bar: #1d1e20;         /* masthead */
+  --bar-hover: #34363a;
+  --hatch: rgba(255, 255, 255, 0.07);
   --till: #746042;        /* 10YR 4/3 glacial till */
   --gley: #6b635b;        /* 10YR 4/1 gleyed horizons */
-  --water: #175a78;
-  --water-deep: #0e3f56;
-  --water-wash: #d5e3e8;
+  --water: #7fb8d4;
+  --water-deep: #a9d3e8;
+  --water-wash: #2a3d4a;
   --rust: #9a4a22;        /* redox mottles */
-  --rust-text: #843c19;   /* rust, dark enough for small text */
-  --stage: #48443f;       /* behind the 3D model */
-  --stage-edge: #1c1a18;
-  --stage-ink: #d9d6cf;   /* ruler and notes on the dark stage */
+  --rust-line: #c06a3f;
+  --rust-text: #e0956a;
+  --rust-wash: rgba(154, 74, 34, 0.12);
+  --stage: #3a3f45;       /* behind the 3D model: a cool blue-grey */
+  --stage-edge: #191b1e;
+  --stage-ink: #d9d6cf;   /* ruler and notes on the stage */
 
   --display: "Young Serif", Georgia, serif;
   --read: "Source Serif 4", Georgia, serif;
@@ -44,7 +53,7 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-::selection { background: var(--water); color: #fff; }
+::selection { background: var(--water); color: var(--bar); }
 :focus-visible { outline: 2px solid var(--water); outline-offset: 3px; border-radius: 2px; }
 html { scrollbar-color: var(--till) var(--ground); caret-color: var(--water); }
 
@@ -59,7 +68,7 @@ h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); letter-spacing: -0.01em; }
 h3 { font-size: 1.25rem; line-height: 1.25; }
 p { margin: 0 0 1.1em; max-width: var(--measure); text-wrap: pretty; }
 
-.skip { position: absolute; left: -999px; top: 0; background: var(--ink); color: #fff; padding: 0.6rem 1rem; z-index: 20; }
+.skip { position: absolute; left: -999px; top: 0; background: var(--bar); color: var(--ink); padding: 0.6rem 1rem; z-index: 20; }
 .skip:focus { left: 0.5rem; top: 0.5rem; }
 
 /* ---------- masthead ---------- */
@@ -67,20 +76,20 @@ p { margin: 0 0 1.1em; max-width: var(--measure); text-wrap: pretty; }
   position: sticky; top: 0; z-index: 10;
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
   padding: 0.7rem var(--gutter);
-  background: var(--ink); color: var(--ground);
+  background: var(--bar); color: var(--ink);
   font-family: var(--label); font-size: 0.875rem;
 }
 .masthead::after {
   content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 6px;
-  background: linear-gradient(90deg, #37312c 0 16%, #6b635b 16% 40%, #7a5f37 40% 45%, #746042 45% 72%, #6d5a3e 72% 100%);
+  background: linear-gradient(90deg, #35302a 0 16%, #665f57 16% 40%, #745c3c 40% 45%, #705d45 45% 100%);  /* Wauseon, in Munsell colours */
 }
 .masthead .site { color: inherit; text-decoration: none; font-weight: 700; letter-spacing: 0.01em; white-space: nowrap; }
 .masthead .site span { font-weight: 400; opacity: 0.72; }
 .masthead nav ul { display: flex; flex-wrap: wrap; gap: 0.15rem 0.3rem; margin: 0; padding: 0; list-style: none; justify-content: flex-end; }
 .masthead nav a { display: block; padding: 0.35rem 0.7rem; color: inherit; text-decoration: none; border-radius: 3px; }
 .masthead a:hover { color: inherit; }
-.masthead nav a:hover { background: #3a332c; }
-.masthead nav a[aria-current="page"] { background: var(--ground); color: var(--ink); font-weight: 600; }
+.masthead nav a:hover { background: var(--bar-hover); }
+.masthead nav a[aria-current="page"] { background: var(--ink); color: var(--bar); font-weight: 600; }
 
 /* ---------- page frame ---------- */
 main { padding: 0 var(--gutter) 5rem; max-width: 78rem; margin: 0 auto; }
@@ -90,7 +99,7 @@ main { padding: 0 var(--gutter) 5rem; max-width: 78rem; margin: 0 auto; }
 .opener .lede { font-size: 1.25rem; line-height: 1.5; color: var(--ink-soft); margin-top: 1.4rem; max-width: 46ch; }
 .opener h1 em { font-style: normal; color: var(--water); }
 section { padding-top: clamp(2.5rem, 6vw, 4.5rem); }
-section > h2 { margin-bottom: 1.1rem; padding-top: 1.1rem; border-top: 3px solid var(--ink); }
+section > h2 { margin-bottom: 1.1rem; padding-top: 1.1rem; border-top: 3px solid var(--line); }
 
 .footer {
   border-top: 1px solid var(--rule); margin-top: 4rem; padding: 1.5rem var(--gutter) 3rem;
@@ -99,7 +108,7 @@ section > h2 { margin-bottom: 1.1rem; padding-top: 1.1rem; border-top: 3px solid
 }
 
 /* ---------- soil cores (the profile drawings) ---------- */
-.core { display: flex; flex-direction: column; border: 1.5px solid var(--ink); background: var(--sheet); overflow: hidden; }
+.core { display: flex; flex-direction: column; border: 1.5px solid var(--line); background: var(--sheet); overflow: hidden; }
 .core .hz {
   position: relative; display: flex; align-items: center; justify-content: center; min-height: 0;
   color: #f4efe6; font-family: var(--data); font-size: 0.8125rem; font-weight: 500;
@@ -110,7 +119,7 @@ section > h2 { margin-bottom: 1.1rem; padding-top: 1.1rem; border-top: 3px solid
 .core .hz:hover, .core .hz.is-on { filter: brightness(1.28) saturate(1.15); box-shadow: inset 0 0 0 2px #fff; z-index: 1; }
 .core .hz:focus-visible { outline-offset: -4px; outline-color: #fff; }
 .core.is-empty {
-  background: repeating-linear-gradient(-45deg, transparent 0 9px, rgba(30, 26, 22, 0.13) 9px 10px), var(--sheet);
+  background: repeating-linear-gradient(-45deg, transparent 0 9px, var(--hatch) 9px 10px), var(--sheet);
   align-items: center; justify-content: center; text-align: center;
   font-family: var(--label); font-size: 0.8125rem; color: var(--ink-soft); padding: 1rem;
 }
@@ -153,20 +162,20 @@ dl.taxa { display: grid; grid-template-columns: max-content 1fr; gap: 0.35rem 1.
 dl.taxa dt { font-family: var(--label); font-size: 0.8125rem; font-weight: 600; color: var(--ink-soft); padding-top: 0.2em; }
 dl.taxa dd { margin: 0; }
 
-.table-wrap { overflow-x: auto; margin: 0 0 1rem; border: 1.5px solid var(--ink); background: var(--sheet); }
+.table-wrap { overflow-x: auto; margin: 0 0 1rem; border: 1.5px solid var(--line); background: var(--sheet); }
 table.drocts.wide { min-width: 40rem; }
 table.drocts.wide th, table.drocts.wide td { white-space: nowrap; }
 table.drocts { border-collapse: collapse; width: 100%; font-family: var(--data); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
 table.drocts caption { caption-side: top; text-align: left; padding: 0.8rem 0.9rem; font-family: var(--label); font-size: 0.875rem; color: var(--ink-soft); border-bottom: 1px solid var(--rule); }
 table.drocts caption strong { color: var(--ink); }
 table.drocts th, table.drocts td { padding: 0.5rem 0.9rem; text-align: left; vertical-align: top; }
-table.drocts thead th { font-family: var(--label); font-size: 0.75rem; font-weight: 600; color: var(--ink-soft); border-bottom: 1.5px solid var(--ink); vertical-align: bottom; }
+table.drocts thead th { font-family: var(--label); font-size: 0.75rem; font-weight: 600; color: var(--ink-soft); border-bottom: 1.5px solid var(--line); vertical-align: bottom; }
 table.drocts thead th small { display: block; font-weight: 400; }
 table.drocts tbody tr { border-top: 1px solid var(--rule); transition: background-color 160ms ease-out; cursor: default; }
 table.drocts tbody tr:first-child { border-top: 0; }
 table.drocts tbody th { font-weight: 500; }
 table.drocts tbody tr:hover, table.drocts tbody tr.is-on { background: var(--water-wash); }
-.chip { display: inline-block; width: 0.8rem; height: 0.8rem; margin-right: 0.45rem; border: 1px solid var(--ink); vertical-align: -0.08em; }
+.chip { display: inline-block; width: 0.8rem; height: 0.8rem; margin-right: 0.45rem; border: 1px solid var(--line); vertical-align: -0.08em; }
 .notes { font-family: var(--label); font-size: 0.8125rem; line-height: 1.55; color: var(--ink-soft); max-width: var(--measure); }
 .notes p { margin-bottom: 0.4em; }
 
@@ -177,7 +186,7 @@ figure.plate { margin: 1.5rem 0; }
 article.post header h3 { margin: 0; font-size: 1.5rem; }
 .table-wrap { max-width: 100%; }
 .table-wrap + p, .table-wrap + .notes { margin-top: 1rem; }
-figure.plate img { border: 1.5px solid var(--ink); background: var(--sheet); width: 100%; }
+figure.plate img { border: 1.5px solid var(--line); background: var(--sheet); width: 100%; }
 figure.plate figcaption { font-family: var(--label); font-size: 0.8125rem; line-height: 1.45; color: var(--ink-soft); margin-top: 0.55rem; max-width: var(--measure); }
 
 ol.story { margin: 1.25rem 0 1.25rem; padding: 0; list-style: none; counter-reset: step; max-width: var(--measure); }
@@ -186,7 +195,7 @@ ol.story li::before { content: counter(step); font-family: var(--data); font-siz
 
 /* ---------- "still to write" slots: delete each one as you fill it ---------- */
 .todo {
-  border: 1.5px dashed var(--rust); background: rgba(154, 74, 34, 0.06);
+  border: 1.5px dashed var(--rust-line); background: var(--rust-wash);
   padding: 1rem 1.15rem; margin: 0 0 1.25rem; max-width: var(--measure);
   font-family: var(--label); font-size: 0.875rem; line-height: 1.55; color: var(--ink);
 }
@@ -196,7 +205,7 @@ ol.story li::before { content: counter(step); font-family: var(--data); font-siz
 .todo code { font-family: var(--data); font-size: 0.8125rem; }
 
 /* ---------- map ---------- */
-.map { border: 1.5px solid var(--ink); background: var(--water-wash); min-height: 13rem; display: grid; place-items: center; padding: 1.5rem; }
+.map { border: 1.5px solid var(--line); background: var(--water-wash); min-height: 13rem; display: grid; place-items: center; padding: 1.5rem; }
 .map .todo { margin: 0; background: var(--sheet); }
 .map iframe { width: 100%; height: 100%; border: 0; }
 .map:has(iframe) { padding: 0; aspect-ratio: 16 / 9; }
@@ -209,12 +218,12 @@ article.post header { margin-bottom: 0.9rem; }
 article.post .by { font-family: var(--label); font-size: 0.8125rem; color: var(--ink-soft); margin: 0.35rem 0 0; }
 
 /* ---------- pager ---------- */
-.pager { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 4rem; padding-top: 1.25rem; border-top: 3px solid var(--ink); font-family: var(--label); font-size: 0.9375rem; }
+.pager { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 4rem; padding-top: 1.25rem; border-top: 3px solid var(--line); font-family: var(--label); font-size: 0.9375rem; }
 
 /* ---------- 3D monolith (drawn by js/soil3d.js) ---------- */
 .monolith { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) 15.5rem; gap: 0.75rem 1.5rem; align-items: start; }
 .monolith .stage {
-  position: relative; height: min(74vh, 40rem); border: 1.5px solid var(--ink); overflow: hidden;
+  position: relative; height: min(74vh, 40rem); border: 1.5px solid var(--line); overflow: hidden;
   background: radial-gradient(ellipse at 50% 40%, var(--stage) 0 30%, var(--stage-edge) 100%);
 }
 .monolith .stage canvas { display: block; width: 100%; height: 100%; cursor: grab; }
@@ -223,19 +232,21 @@ article.post .by { font-family: var(--label); font-size: 0.8125rem; color: var(-
 .monolith .bar { grid-column: 1; display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .monolith .bar button {
   font-family: var(--label); font-size: 0.8125rem; font-weight: 600; color: var(--ink);
-  background: var(--sheet); border: 1.5px solid var(--ink); border-radius: 3px; padding: 0.4rem 0.85rem; cursor: pointer;
+  background: var(--sheet); border: 1.5px solid var(--line); border-radius: 3px; padding: 0.4rem 0.85rem; cursor: pointer;
   transition: background-color 160ms ease-out, color 160ms ease-out;
 }
 .monolith .bar button:hover { background: var(--water-wash); }
 .monolith .bar button[aria-pressed="true"] { background: var(--ink); color: var(--ground); }
 .monolith .bar button[hidden] { display: none; }
 .monolith:not(:has(canvas)) .bar { visibility: hidden; }
-.monolith .card { grid-column: 2; grid-row: 1 / span 2; border-top: 3px solid var(--ink); padding-top: 0.8rem; font-family: var(--data); font-size: 0.8125rem; line-height: 1.5; }
+.monolith .card { grid-column: 2; grid-row: 1 / span 2; border-top: 3px solid var(--line); padding-top: 0.8rem; font-family: var(--data); font-size: 0.8125rem; line-height: 1.5; }
 .monolith .card h3 { font-family: var(--data); font-weight: 500; font-size: 1.5rem; margin-bottom: 0.8rem; }
 .monolith .card h3 small { display: block; font-family: var(--label); font-size: 0.8125rem; font-weight: 400; color: var(--ink-soft); margin-top: 0.3rem; }
 .monolith .card dl { display: grid; grid-template-columns: max-content 1fr; gap: 0.35rem 0.9rem; margin: 0; }
 .monolith .card dt { font-family: var(--label); font-size: 0.75rem; font-weight: 600; color: var(--ink-soft); padding-top: 0.1em; }
 .monolith .card dd { margin: 0; }
+.monolith .card h4 { font-family: var(--label); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.02em; color: var(--ink-soft); margin: 1.1rem 0 0.5rem; padding-top: 0.7rem; border-top: 1px solid var(--rule); }
+.monolith .card dd .chip { margin-right: 0.3rem; }
 .monolith .card-hint { font-family: var(--label); color: var(--ink-soft); }
 .monolith figcaption { grid-column: 1 / -1; font-family: var(--label); font-size: 0.8125rem; line-height: 1.45; color: var(--ink-soft); max-width: var(--measure); }
 
@@ -271,6 +282,7 @@ article.post .by { font-family: var(--label); font-size: 0.8125rem; color: var(-
 }
 
 @media print {
+  :root { color-scheme: light; --ground: #fff; --sheet: #fff; --ink: #1e1a16; --ink-soft: #4d453c; --rule: #bdb6a8; --line: #1e1a16; --water: #175a78; --rust-text: #843c19; --rust-wash: transparent; }
   .masthead, .rail, .todo, .pager, .monolith-section { display: none; }
   .soil { display: block; }
   body { background: #fff; }
