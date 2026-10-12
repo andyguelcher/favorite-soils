@@ -39,7 +39,14 @@ TO DO: Upload a screenshot of the DRoCTS+ rubric you filled out for one groupmat
 
 ## How it formed
 
-
+| --- | 
+1. Collovium was deposited aided by water and gravity
+| --- |
+2. First volcanic eruption occurs depositing tephra, volcanic glass, and pumice
+| --- |
+3. Second volcanic eruption occurs depositing more tephra, volcanic glass, and pumice
+| --- |
+4. Vegetation grows and accumulates into the Oi horizon
 
 
 ## Annual water budget, compared
