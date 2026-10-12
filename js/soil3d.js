@@ -36,16 +36,71 @@ const SUFFIXES = {
   y: "gypsum", z: "salts", n: "sodium", r: "soft bedrock", c: "concretions", o: "oxides"
 };
 
-// The last word in a cell that is a known code, so "2 m sbk" still reads as sbk.
-function codeIn(text, dict) {
-  const words = text.toLowerCase().split(/[^a-z]+/).filter((w) => w in dict);
-  return words.length ? words[words.length - 1] : null;
+/* ---------- reading the codes people type in the table ---------- */
+// Exact codes are read as they are. Full words, common abbreviations and
+// one-letter slips are read too, but marked as a guess so the card can say
+// "read as ...". A typo that is equally close to two codes is not guessed.
+const ALIASES = {
+  structure: {
+    pris: "pr", prism: "pr", prisms: "pr", pri: "pr", sab: "sbk", sabk: "sbk", subang: "sbk", subangular: "sbk", blocky: "sbk",
+    ab: "abk", ang: "abk", angular: "abk", gran: "gr", gra: "gr", grn: "gr", plat: "pl", plt: "pl", mas: "ma", mass: "ma",
+    col: "cpr", colm: "cpr", colum: "cpr", single: "sg"
+  },
+  hcl: {
+    none: "ne", no: "ne", non: "ne", noneffervescent: "ne", nonefervescent: "ne",
+    slight: "sl", slightly: "sl", strong: "st", strongly: "st", violent: "ve", violently: "ve", effervescent: "e"
+  },
+  texture: {}
+};
+// Texture modifiers for rock fragments: "grsl" is gravelly sandy loam.
+const TEXTURE_MODIFIERS = {
+  gr: "gravelly", vgr: "very gravelly", xgr: "extremely gravelly", cb: "cobbly", vcb: "very cobbly",
+  st: "stony", vst: "very stony", ch: "channery", vch: "very channery", cn: "channery"
+};
+function editDistance(a, b) {
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    }
+  }
+  return d[a.length][b.length];
 }
+// Every code found in a cell, in order: [{ code, label, guessed }].
+function readCodes(text, dict) {
+  const kind = dict === TEXTURES ? "texture" : dict === STRUCTURES ? "structure" : "hcl";
+  const aliases = ALIASES[kind], found = [];
+  let rest = (text || "").toLowerCase();
+  const add = (code, label, guessed) => { if (!found.some((f) => f.code === code)) found.push({ code, label, guessed }); };
+  // Full names first, longest first: "fine sandy loam", "subangular blocky", "strongly effervescent".
+  Object.entries(dict).sort((x, y) => y[1].length - x[1].length).forEach(([code, name]) => {
+    const re = new RegExp("\\b" + name.replace(/-/g, "[- ]?") + "\\b");
+    if (re.test(rest)) { add(code, name, false); rest = rest.replace(re, " "); }
+  });
+  rest.split(/[^a-z]+/).filter(Boolean).forEach((w) => {
+    if (w in dict) return add(w, dict[w], false);
+    if (aliases[w]) return add(aliases[w], dict[aliases[w]], true);
+    if (kind === "texture") {
+      const mod = Object.keys(TEXTURE_MODIFIERS).sort((x, y) => y.length - x.length).find((m) => w.startsWith(m) && w.slice(m.length) in dict);
+      if (mod) return add(w.slice(mod.length), TEXTURE_MODIFIERS[mod] + " " + dict[w.slice(mod.length)], true);
+    }
+    if (w.length < 3) return;   // two-letter slips are too ambiguous ("nr" may mean "not recorded")
+    const near = Object.keys(dict).filter((c) => c.length > 1 && editDistance(w, c) === 1);
+    if (near.length === 1) add(near[0], dict[near[0]], true);
+  });
+  return found;
+}
+const codeIn = (text, dict) => (readCodes(text, dict)[0] || {}).code || null;
+const EMPTY_CELL = /^\s*(n\/?a|n\/l|-+|—|not given|not listed|not recorded)\s*$/i;
 function spell(raw, dict) {
-  if (!raw) return "";
-  const code = codeIn(raw, dict);
-  if (!code) return raw + " (code not recognised)";
-  return raw.toLowerCase() === code ? code + ", " + dict[code] : raw + " (" + dict[code] + ")";
+  if (!raw || EMPTY_CELL.test(raw)) return "";
+  const found = readCodes(raw, dict);
+  if (!found.length) return raw + " (code not recognised)";
+  const labels = found.map((f) => f.label).join(", ");
+  if (raw.trim().toLowerCase() === labels) return raw;
+  if (found.some((f) => f.guessed)) return raw + " (read as " + labels + ")";
+  return found.length === 1 && raw.toLowerCase() === found[0].code ? raw + ", " + labels : raw + " (" + labels + ")";
 }
 
 // "2Cd" -> { lith: "2", master: "C", suffix: "d" }
@@ -251,8 +306,8 @@ function lookFor(hz, row, osd) {
   const L = { texture: null, structures: [], partings: false, rocks: 0, fragments: [], roots: null, features: [], boundary: null, dense: false };
   if (row) {
     L.texture = codeIn(row.texture, TEXTURES);
-    const st = codeIn(row.structure, STRUCTURES);
-    if (st) L.structures = [{ type: st, grade: 2, size: 2 }];
+    // "pris/sbk" reads as prismatic parting to subangular blocky.
+    L.structures = readCodes(row.structure, STRUCTURES).map((f) => ({ type: f.code, grade: 2, size: 2 }));
     L.rocks = parseFloat((row.rocks.match(/\d+(\.\d+)?/) || ["0"])[0]);
     L.fragments = [{ pct: L.rocks, kind: "gravel" }];
   }
