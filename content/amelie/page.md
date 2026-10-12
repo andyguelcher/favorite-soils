@@ -1,11 +1,12 @@
 ## Classification
-
-Series: Weminuche
-Order: Alfisols
-Suborder: Cryalfs
-Great group: Haplocryalf
-Subgroup: Ustic Haplocryalf
-Family: Fine-loamy, mixed, superactive Ustic Haplocryalfs
+| Level | Name |
+| --- | --- |
+| Series: | Weminuche |
+| Order: | Alfisols |
+| Suborder: | Cryalfs |
+| Great group: | Haplocryalf |
+| Subgroup: | Ustic Haplocryalf |
+| Family: | Fine-loamy, mixed, superactive Ustic Haplocryalfs |
 
 
 ## DRoCTS+ table
