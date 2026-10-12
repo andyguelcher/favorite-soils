@@ -1,10 +1,19 @@
 ## Classification
 
-TO DO: Replace this line with your soil's series, order, suborder, great group, subgroup and family.
+| Level | Name |
+| --- | ---|
+| Series | Mountwow |
+| Order | Andisols |
+| Suborder | Aquands |
+| Greatgroup | Cryaquands |
+| Subgroup | Thaptic Cryaquands |
+| Family | Medial, glassy, acid Thaptic Cryaquands |
 
 ## DRoCTS+ table
 
-TO DO: Upload a picture of your DRoCTS+ table into this folder, then replace this line with: ![My DRoCTS+ table](the-file-name.jpg)
+<img width="3636" height="2856" alt="MountwowDRoCTS" src="https://github.com/user-attachments/assets/e9465ed7-2571-4770-93cc-1c75893a25f3" />
+
+![Katherine Kovich DRoCTS Table](MountwowDRoCTS.jpg)
 
 ## A groupmate's table, scored
 
