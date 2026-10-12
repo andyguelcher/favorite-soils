@@ -33,7 +33,7 @@ Structure: sbk, subangular blocky.
 
 ## A groupmate's table, scored
 
-![Amelie's Scored Weminuche DRoCTS+ Table: 9.5/10](DRoCTS+Scoring.jpeg)
+![Amelie's Scored Weminuche DRoCTS+ Table: 9.5/10](DRoCTS+.Scoring.jpeg)
 
 
 ## How it formed
