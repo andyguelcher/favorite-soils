@@ -51,4 +51,5 @@ TO DO: The group picks one: plant-available water, physical properties and water
 
 ## Sources
 
-TO DO: List a citation for every picture and data source on this page.
+- Soil Survey Staff, USDA-NRCS. Official Soil Series Descriptions: Weminuche series. https://soilseries.sc.egov.usda.gov/OSD_Docs/W/WEMINUCHE.html. Accessed 1 Oct. 2026.
+- California Soil Resource Lab, UC Davis. [SoilWeb](https://casoilresource.lawr.ucdavis.edu/gmap/). Accessed 1 Oct. 2026.

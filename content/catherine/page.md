@@ -59,6 +59,6 @@ TO DO: The group picks one: plant-available water, physical properties and water
 
 ## Sources
 
-“Soil Data Explorer - MOUNTWOW.” Soil Data Explorer | California Soil Resource Lab, UC Davis, soilmap2-1.lawr.ucdavis.edu/sde/?series=mountwow#osd. Accessed 14 Oct. 2026. 
+“Soil Data Explorer - MOUNTWOW.” Soil Data Explorer | California Soil Resource Lab, UC Davis, soilmap2-1.lawr.ucdavis.edu/sde/?series=mountwow#osd. Accessed 1 Oct. 2026. 
 
-Soil Survey Staff, Natural Resources Conservation Service, United States Department of Agriculture. Web Soil Survey. websoilsurvey.sc.egov.usda.gov/App/WebSoilSurvey.aspx. Accessed 14 Sept. 2026. 
+Soil Survey Staff, Natural Resources Conservation Service, United States Department of Agriculture. Web Soil Survey. websoilsurvey.sc.egov.usda.gov/App/WebSoilSurvey.aspx. Accessed 1 Oct. 2026. 

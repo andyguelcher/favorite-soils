@@ -52,7 +52,5 @@ TO DO: The group picks one: plant-available water, physical properties and water
 
 ## Sources
 
-- Soil Survey Staff, USDA-NRCS. Official Soil Series Descriptions: Wauseon series.
-- California Soil Resource Lab, UC Davis. [SoilWeb](https://casoilresource.lawr.ucdavis.edu/gmap/).
-
-TO DO: Add access dates, and a citation for every picture and data source used above.
+- Soil Survey Staff, USDA-NRCS. Official Soil Series Descriptions: Wauseon series. https://soilseries.sc.egov.usda.gov/OSD_Docs/W/WAUSEON.html. Accessed 2 Oct. 2026.
+- California Soil Resource Lab, UC Davis. [SoilWeb](https://casoilresource.lawr.ucdavis.edu/gmap/). Accessed 2 Oct. 2026.
