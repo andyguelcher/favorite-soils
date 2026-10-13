@@ -30,7 +30,7 @@ Depths converted from centimetres to inches. pH ranges estimated from the reacti
 
 ## Katherine Kovich's DRoCTS+ table, scored
 
-![My DRoCTS+ rubric for Katherine Kovich's Mountwow table, 10 out of 10.](KatherineRubric.png)
+![My DRoCTS+ rubric for Katherine Kovich's Mountwow table, 25 out of 25.](KatherineRubricGraded.png)
 
 ## How it formed
 
