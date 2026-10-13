@@ -1,0 +1,80 @@
+The history of this soil, played by the "Play its history" button on the 3D model. Each stage starts with "Stage:". Deposit lists horizons laid down at that stage, Develop lists horizons that start to form, and Finish lists horizons that reach how they look today. Researched for the timeline by Claude (Anthropic's AI assistant), 12 Oct. 2026; full citations are in Sources on this page.
+
+Stage: Glaciers retreat and colluvium slides in
+When: after about 15,000 years ago, and before 7,630 years ago
+Age: 12000
+Deposit: 2Agb2, 2Bgb4, 2Bgb5
+Text: Valley glaciers shrink back up Mount Rainier after the Evans Creek glaciation. Andesite gravel and cobbles slide and wash down the slopes of the Cowlitz Divide as colluvium, the first parent material.
+Source: Mountwow OSD; Crandell 1969 (USGS Bulletin 1288)
+
+Stage: A soil forms on the colluvium
+When: before 7,630 years ago
+Age: 9500
+Develop: 2Agb2, 2Bgb4, 2Bgb5
+Text: Plants grow on the colluvium and an A horizon darkens at its surface. That old surface is the lithologic discontinuity at 66 cm today.
+Source: Mountwow OSD
+
+Stage: Mount Mazama erupts (ash layer O)
+When: about 7,630 years ago
+Age: 7630
+Deposit: Bgb3
+Text: Mount Mazama in Oregon erupts and collapses to form Crater Lake. Its ash falls across the Pacific Northwest and buries the first soil.
+Source: Jensen and others 2019; Tephra Explorer (NPS); Mountwow OSD
+
+Stage: Mount Rainier erupts (layer D)
+When: roughly 7,000 years ago
+Age: 7000
+Deposit: Bgb2
+Text: Mount Rainier itself adds tephra layer D on top of the Mazama ash.
+Source: Vallance and Scott (Osceola Mudflow); Mountwow OSD
+
+Stage: Mount Rainier erupts (layer F)
+When: about 5,600 years ago
+Age: 5600
+Deposit: Bgb1
+Text: Around the time its summit collapses into the Osceola Mudflow, Mount Rainier erupts layer F.
+Source: Vallance and Scott (Osceola Mudflow); Mountwow OSD
+
+Stage: A meadow soil forms on the ash
+When: about 5,600 to 3,660 years ago
+Age: 4600
+Deposit: Agb1
+Develop: Agb1, Bgb1, Bgb2, Bgb3, 2Agb2
+Text: For nearly 2,000 years no large ash falls here. The meadow builds a new dark A horizon on top of the ash, and the ash beneath begins to weather.
+Source: Mountwow OSD
+
+Stage: Mount St. Helens erupts (layer Yn)
+When: about 3,660 years ago
+Age: 3660
+Deposit: Bw3
+Text: A large eruption of Mount St. Helens drops layer Yn and buries the meadow soil, which survives today as the buried Agb horizon.
+Source: Jensen and others 2019; Mountwow OSD
+
+Stage: Mount St. Helens erupts (layer P)
+When: about 3,000 to 2,550 years ago
+Age: 2800
+Deposit: Bw2
+Text: Mount St. Helens adds the layers of tephra set P.
+Source: USGS tephra framework; Mountwow OSD
+
+Stage: Mount Rainier erupts (layer C)
+When: about 2,200 years ago
+Age: 2200
+Deposit: Bw1
+Text: Mount Rainier erupts tephra layer C.
+Source: Sisson and Vallance 2009; Mountwow OSD
+
+Stage: Mount St. Helens erupts (layer Wn)
+When: 1480 CE, about 550 years ago
+Age: 546
+Deposit: A
+Text: Mount St. Helens drops layer Wn, the youngest ash in the profile. Today's A horizon forms in it.
+Source: Tephra Explorer (NPS); Mountwow OSD
+
+Stage: Today
+When: every year
+Age: 1
+Deposit: Oi
+Finish: all
+Text: Snowmelt saturates the soil each spring, leaving grey depletions and reddish iron along root channels. The weathering ash gives the soil its andic properties, and heather, huckleberry and lupine add a thin Oi of plant litter.
+Source: Mountwow OSD

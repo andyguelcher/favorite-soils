@@ -1,0 +1,43 @@
+The history of this soil, played by the "Play its history" button on the 3D model. Each stage starts with "Stage:". Deposit lists horizons laid down at that stage, Develop lists horizons that start to form, and Finish lists horizons that reach how they look today. Researched for the timeline by Claude (Anthropic's AI assistant), 12 Oct. 2026; full citations are in Sources on this page.
+
+Stage: The glacier lays down till
+When: about 17,500 years ago or earlier
+Age: 18000
+Deposit: 2BC, 2C, 2Cd
+Finish: 2Cd
+Text: The Erie lobe of the last ice sheet spreads clay loam till across northwest Ohio. The deepest till is pressed dense by the weight of the ice above it, which is why the 2Cd still stops roots today.
+Source: Wauseon OSD; Blockland and Fisher 2016; Keys to Soil Taxonomy (densic materials)
+
+Stage: Glacial Lake Maumee
+When: about 17,500 years ago (14,000 radiocarbon years)
+Age: 17500
+Deposit: Ap, A, Bg1, Bg2, Bg3
+Text: As the ice melts back, its meltwater ponds against the ice front as glacial Lake Maumee. Waves and deltas spread loamy and sandy sediment over the till, the soil's second parent material.
+Source: Wauseon OSD; Lake Maumee (Leverett and Taylor); Ohio Coastal Atlas
+
+Stage: The lake drains
+When: roughly 16,000 years ago (estimate)
+Age: 16000
+Text: Lake levels fall as lower outlets open. The Wauseon site, about 750 ft above sea level, lies just below Lake Maumee's lowest level of 760 ft, so the flat, wet lake bed becomes land as the lake gives way to lower lakes.
+Source: Lake Maumee (Leverett and Taylor); Wauseon OSD
+
+Stage: Swamp forest builds a dark topsoil
+When: since the lake drained
+Age: 12000
+Develop: Ap, A
+Text: Swamp white oak, soft maple, elm, basswood and sycamore grow on the poorly drained plain, part of the Great Black Swamp. Roots and decaying leaves darken the top 33 cm into a thick, black mollic epipedon.
+Source: Wauseon OSD; History of the Great Black Swamp (H2Ohio)
+
+Stage: Water and time reshape the subsoil
+When: since the lake drained, and still today
+Age: 6000
+Finish: Bg1, Bg2, Bg3, 2BC, 2C
+Text: A water table perched near the surface from January to April starves the subsoil of oxygen, greying the Bg horizons and leaving rust-coloured iron masses. Rain dissolves carbonates from the upper 60 to 100 cm, so only the till beneath still fizzes in acid.
+Source: Wauseon OSD
+
+Stage: Drained and plowed
+When: 1850s to the early 1900s
+Age: 150
+Finish: Ap, A
+Text: Settlers drain the Great Black Swamp with ditches and, from the late 1850s, buried clay tile. Plowing mixes the top 23 cm into the Ap horizon, and the land is farmed for corn and soybeans today.
+Source: History of the Great Black Swamp (H2Ohio); Draining America (Library of Congress); Wauseon OSD

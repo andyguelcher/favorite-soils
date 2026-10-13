@@ -1,0 +1,49 @@
+The history of this soil, played by the "Play its history" button on the 3D model. Each stage starts with "Stage:". Deposit lists horizons laid down at that stage, Develop lists horizons that start to form, and Finish lists horizons that reach how they look today. Researched for the timeline by Claude (Anthropic's AI assistant), 12 Oct. 2026; full citations are in Sources on this page.
+
+Stage: Red beds form
+When: Early Permian, more than 270 million years ago
+Age: 280000000
+Text: Rivers spread sand and mud across this part of Colorado. Hematite stains it red, and it hardens into the red sandstone and siltstone of the Cutler Formation, the rock this soil is made from.
+Source: Lemon Dam geology (US Bureau of Reclamation); Hullaster and others 2023
+
+Stage: Glaciers fill the valleys
+When: about 30,000 to 12,000 years ago
+Age: 25000
+Text: Pinedale valley glaciers fill the San Juan Mountains, at their largest 23,500 to 21,000 years ago. Glacial till still lies around Lemon Reservoir, near where this soil was described.
+Source: Pinedale glaciation (US Forest Service); Lemon Dam geology (US Bureau of Reclamation)
+
+Stage: The ice melts away
+When: by about 12,300 years ago
+Age: 12300
+Text: The glaciers melt back. In the neighbouring Animas valley the ice was gone by about 12,300 years ago, dated by beryllium-10 in glacially polished rock, leaving steep slopes of broken red rock.
+Source: Guido and others 2007
+
+Stage: Slope alluvium builds up
+When: since the ice left
+Age: 11000
+Deposit: A, E, E/B, Bt1, Bt2, BC
+Develop: BC
+Text: Rain and snowmelt wash weathered red sandstone down the mountainside. It collects on backslopes and toeslopes as slope alluvium, this soil's parent material, with its gravel, cobbles and stones.
+Source: Weminuche OSD
+
+Stage: A topsoil forms
+When: over thousands of years, still going on
+Age: 7000
+Develop: A, E, E/B
+Text: White fir, Douglas fir, aspen and grasses take root. Organic matter darkens a thin A horizon, and water moving down leaches the layer beneath it into a paler E horizon.
+Source: Weminuche OSD
+
+Stage: Clay moves down
+When: over thousands of years, still going on
+Age: 3000
+Finish: A, E, E/B, Bt1, Bt2, BC
+Text: Water carries fine clay out of the E and leaves it as clay films on the peds of the Bt horizons, the argillic horizon that makes this soil an Alfisol. The E/B keeps a mix of both.
+Source: Weminuche OSD
+
+Stage: A litter layer
+When: today
+Age: 1
+Deposit: Oi
+Finish: Oi
+Text: Needles, twigs and bark from the conifer forest gather on the surface as the Oi horizon. The land is used for timber, grazing, recreation and wildlife habitat.
+Source: Weminuche OSD

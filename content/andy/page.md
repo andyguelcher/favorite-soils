@@ -54,3 +54,14 @@ TO DO: The group picks one: plant-available water, physical properties and water
 
 - Soil Survey Staff, USDA-NRCS. Official Soil Series Descriptions: Wauseon series. https://soilseries.sc.egov.usda.gov/OSD_Docs/W/WAUSEON.html. Accessed 2 Oct. 2026.
 - California Soil Resource Lab, UC Davis. [SoilWeb](https://casoilresource.lawr.ucdavis.edu/gmap/). Accessed 2 Oct. 2026.
+
+Sources for the 3D evolution timeline (the "Play its history" button on the model above). These were found, read and summarized by Claude, Anthropic's AI assistant, on 12 Oct. 2026, and were used only for that timeline graphic:
+
+- Claude (Opus 5.5 model). Anthropic. Research and design of the 3D evolution timeline for this page, 12 Oct. 2026.
+- Wikipedia contributors. "Lake Maumee," citing Leverett, F., and F. B. Taylor, *The Pleistocene of Indiana and Michigan*, USGS Monograph 53, 1915. [en.wikipedia.org/wiki/Lake_Maumee](https://en.wikipedia.org/wiki/Lake_Maumee). Accessed 12 Oct. 2026.
+- Ohio Department of Natural Resources. *Ohio Coastal Atlas*, 3rd ed., Chapter 9: Geology. [Ohio Coastal Atlas, Geology](https://dam.assets.ohio.gov/image/upload/ohiodnr.gov/documents/coastal/ohio-coastal-atlas/CH09_Geology.pdf). Accessed 12 Oct. 2026.
+- Blockland, J. D., and T. G. Fisher. "The surficial geology of the Delta 7.5-minute series quadrangle, Fulton County, Ohio, USA." *Journal of Maps* 12, no. 5 (2016): 731-735. [University of Toledo listing](https://scholars.utoledo.edu/display/pub-WOS000389542600004). Accessed 12 Oct. 2026.
+- Soil Survey Staff. *Keys to Soil Taxonomy*, 13th ed. USDA-NRCS, 2022 (densic materials). [Keys to Soil Taxonomy](https://Nrcs.usda.gov/sites/default/files/2022-09/Keys-to-Soil-Taxonomy.pdf). Accessed 12 Oct. 2026.
+- University of Maine, Bear Brook Watershed in Maine. "Soil Morphology and Chemistry" (dense basal till). [umaine.edu/bbwm](https://umaine.edu/bbwm/?p=99). Accessed 12 Oct. 2026.
+- H2Ohio. "History of the Great Black Swamp." State of Ohio. [History of the Great Black Swamp](https://dam.assets.ohio.gov/image/upload/h2.ohio.gov/STA/History_of_the_Great_Black_Swamp.pdf). Accessed 12 Oct. 2026.
+- Library of Congress. "Draining America." *Worlds Revealed* blog, Feb. 2024. [blogs.loc.gov](https://blogs.loc.gov/maps/2024/02/draining-america/). Accessed 12 Oct. 2026.

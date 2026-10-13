@@ -252,6 +252,43 @@ article.post .by { font-family: var(--label); font-size: 0.8125rem; color: var(-
 .monolith .card-hint { font-family: var(--label); color: var(--ink-soft); }
 .monolith figcaption { grid-column: 1 / -1; font-family: var(--label); font-size: 0.8125rem; line-height: 1.45; color: var(--ink-soft); max-width: var(--measure); }
 
+/* the soil's history, played on the 3D model (see history.txt) */
+.monolith .bar .history-btn { background: var(--water-wash); border-color: var(--water); }
+.monolith .bar .history-btn[aria-pressed="true"] { background: var(--water); color: var(--bar); }
+.monolith .bar button:disabled { opacity: 0.45; cursor: default; }
+.monolith .history { grid-column: 2; grid-row: 1 / span 2; border-top: 3px solid var(--water); padding-top: 0.8rem; font-family: var(--label); }
+.monolith .card[hidden] { display: none; }
+.monolith .history[hidden] { display: none; }
+.history .history-when { margin: 0 0 0.2rem; font-family: var(--data); font-size: 0.8125rem; color: var(--water-deep); max-width: none; }
+.history h3 { font-size: 1.35rem; margin: 0 0 0.45rem; }
+.history h3:focus { outline: none; }
+.history .history-text { font-family: var(--read); font-size: 1rem; margin-bottom: 0.35rem; }
+.history .history-source { font-size: 0.75rem; color: var(--ink-soft); margin-bottom: 0.9rem; }
+.history .timeline { position: relative; height: 2.6rem; margin: 0 0.5rem 0.4rem; }
+.history .track { position: absolute; left: 0; right: 0; top: 0.7rem; height: 3px; background: var(--rule); --done: 0%; }
+.history .track::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: var(--done); background: var(--water); transition: width 600ms ease-out; }
+.history .ticks button {
+  position: absolute; top: 0.32rem; width: 0.85rem; height: 0.85rem; margin-left: -0.425rem; padding: 0;
+  border-radius: 50%; border: 2px solid var(--rule); background: var(--ground); cursor: pointer;
+}
+.history .ticks button.is-past { border-color: var(--water); background: var(--water); }
+.history .ticks button.is-on { border-color: var(--ink); background: var(--water); transform: scale(1.35); }
+.history .timeline .end { position: absolute; top: 1.45rem; font-family: var(--data); font-size: 0.6875rem; color: var(--ink-soft); white-space: nowrap; }
+.history .timeline .start { left: -0.5rem; }
+.history .timeline .now { right: -0.5rem; }
+.history .history-controls { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.history .history-controls button {
+  font-family: var(--label); font-size: 0.8125rem; font-weight: 600; color: var(--ink);
+  background: var(--sheet); border: 1.5px solid var(--line); border-radius: 3px; padding: 0.4rem 0.85rem; cursor: pointer;
+}
+.history .history-controls button:hover:not(:disabled) { background: var(--water-wash); }
+.history .history-controls button:disabled { opacity: 0.45; cursor: default; }
+details.history-list { margin-top: 1rem; max-width: var(--measure); font-family: var(--label); font-size: 0.875rem; }
+details.history-list summary { cursor: pointer; font-weight: 600; color: var(--water); }
+details.history-list ol { padding-left: 1.3rem; margin: 0.6rem 0 0; }
+details.history-list li { margin-bottom: 0.6rem; line-height: 1.5; }
+details.history-list small { color: var(--ink-soft); }
+
 /* ---------- small screens ---------- */
 @media (max-width: 760px) {
   body { font-size: 1rem; }
@@ -275,12 +312,13 @@ article.post .by { font-family: var(--label); font-size: 0.8125rem; color: var(-
   .monolith { grid-template-columns: minmax(0, 1fr); }
   .monolith .stage { height: min(58vh, 30rem); }
   .monolith .card { grid-column: 1; grid-row: auto; }
+  .monolith .history { grid-column: 1; grid-row: auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .rail .core { animation: none; }
-  .cores a.col .core, .core .hz, table.drocts tbody tr, .monolith .bar button { transition: none; }
+  .cores a.col .core, .core .hz, table.drocts tbody tr, .monolith .bar button, .history .track::after { transition: none; }
 }
 
 @media print {

@@ -311,6 +311,33 @@ function readHorizon(text) {
   return o;
 }
 
+/* ---------- the soil's history, from history.txt ---------- */
+// Plain "Key: value" lines; each stage starts with "Stage:". Anything else is ignored.
+function parseHistory(text) {
+  const stages = [];
+  let cur = null, lastKey = "";
+  const list = (v) => v.split(/[,;]/).map((x) => x.trim()).filter(Boolean);
+  text.replace(/\r/g, "").split("\n").forEach((line) => {
+    const m = line.match(/^\s*(stage|when|age|deposit|develop|finish|text|source)\s*:\s*(.*)$/i);
+    if (!m) {
+      if (cur && lastKey === "text" && line.trim()) cur.text += " " + line.trim();
+      else lastKey = "";
+      return;
+    }
+    const key = m[1].toLowerCase(), val = m[2].trim();
+    lastKey = key;
+    if (key === "stage") {
+      cur = { title: val, when: "", age: 0, deposit: [], develop: [], finish: [], text: "", source: "" };
+      stages.push(cur);
+    } else if (cur) {
+      if (key === "age") cur.age = Math.max(0, parseFloat(val.replace(/,/g, "")) || 0);
+      else if (key === "deposit" || key === "develop" || key === "finish") cur[key] = cur[key].concat(list(val));
+      else cur[key] = val;
+    }
+  });
+  return stages.filter((st) => st.title);
+}
+
 /* ---------- what each horizon should look like ---------- */
 // From the OSD when there is one, otherwise from the table and the horizon name.
 function lookFor(hz, row, osd) {
@@ -667,7 +694,7 @@ function describe(soil, table) {
 }
 
 /* ---------- the page section ---------- */
-function buildSection(soil, table, hasOSD) {
+function buildSection(soil, table, hasOSD, history) {
   const section = document.createElement("section");
   section.className = "monolith-section";
   section.innerHTML =
@@ -681,11 +708,34 @@ function buildSection(soil, table, hasOSD) {
     '<button type="button" data-reset>Reset view</button>' +
     "</div>" +
     '<div class="card" data-card></div>' +
+    (history.length ? '<div class="history" data-history hidden></div>' : "") +
     "<figcaption>Depths are to scale; width and thickness are not. Each horizon is its moist Munsell colour, and the surface patterns are drawn from " +
     (hasOSD ? "the official series description (structure, redox features, roots and boundaries) and the DRoCTS+ table." : "the texture, structure and rock codes in the table.") +
     "</figcaption>" +
     "</figure>";
   section.querySelector(".stage").setAttribute("aria-label", describe(soil, table));
+  if (history.length) {
+    // The whole history as text, for reading at your own pace and for screen readers.
+    const details = document.createElement("details");
+    details.className = "history-list";
+    const summary = document.createElement("summary");
+    summary.textContent = "How this soil formed, stage by stage";
+    const ol = document.createElement("ol");
+    history.forEach((st) => {
+      const li = document.createElement("li");
+      const b = document.createElement("b");
+      b.textContent = st.title + (st.when ? " (" + st.when + ")" : "");
+      li.append(b, document.createTextNode(" " + st.text));
+      if (st.source) {
+        const src = document.createElement("small");
+        src.textContent = "Source: " + st.source;
+        li.append(document.createElement("br"), src);
+      }
+      ol.appendChild(li);
+    });
+    details.append(summary, ol);
+    section.querySelector(".monolith").after(details);
+  }
 
   const body = document.querySelector("[data-body]");
   const row = body.querySelector("tr[data-hz]");
@@ -790,7 +840,7 @@ function fillCard(card, soil, table, osd, name) {
 }
 
 /* ---------- the 3D scene ---------- */
-async function buildModel(section, soil, table, osd, page, pending) {
+async function buildModel(section, soil, table, osd, history, page, pending) {
   const THREE = await import("three");
   const { OrbitControls } = await import("three/addons/controls/OrbitControls.js");
   try { await document.fonts.load('500 20px "IBM Plex Mono"'); } catch (e) { /* the fallback font is fine */ }
@@ -855,7 +905,10 @@ async function buildModel(section, soil, table, osd, page, pending) {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(W, h, T), mats);
     const y = D / 2 - (hz.top + hz.bottom) / 2;
     mesh.position.y = y;
-    mesh.userData = { name: hz.name, y: y, i: i, now: { lift: 0, off: 0, dim: 1 }, goal: { lift: 0, off: 0, dim: 1 } };
+    mesh.userData = {
+      name: hz.name, y: y, h: h, i: i,
+      now: { lift: 0, off: 0, dim: 1, grow: 1, mix: 1 }, goal: { lift: 0, off: 0, dim: 1, grow: 1, mix: 1 }
+    };
     model.add(mesh);
     return mesh;
   });
@@ -959,18 +1012,221 @@ async function buildModel(section, soil, table, osd, page, pending) {
     dirty = true;
   }
 
+  /* ---------- "Play its history" ---------- */
+  // Each horizon starts as raw parent material and blends into how it looks today
+  // ("mix"); horizons not yet laid down are hidden, then grow in from below ("grow").
+  const panel = section.querySelector("[data-history]");
+  let historyOn = false, stageIndex = 0, playing = false, timer = null;
+  const ghost = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(W, D, T)),
+    new THREE.LineBasicMaterial({ color: new THREE.Color().setRGB(light[0] / 255, light[1] / 255, light[2] / 255, THREE.SRGBColorSpace), transparent: true, opacity: 0.35 })
+  );
+  ghost.visible = false;
+  model.add(ghost);
+
+  function prepareHistory() {
+    if (slabs[0].userData.mix) return;
+    slabs.forEach((m, i) => {
+      const hz = hzs[i], h = hz.bottom - hz.top, look = looks[i];
+      const rgb = rgbOf(hz.color), grey = (rgb[0] + rgb[1] + rgb[2]) / 3;
+      // Raw parent material: paler and greyer than today's horizon, with its grains and rocks but no structure.
+      const rawHz = { ...hz, color: css(shade(mix(rgb, [grey, grey, grey], 0.4), 0.12)) };
+      const rawLook = {
+        texture: look ? look.texture : null, structures: [], partings: false, rocks: look ? look.rocks : 0,
+        fragments: look ? look.fragments : [], roots: null, features: [], boundary: null, dense: false
+      };
+      const rawFace = paintFace(rawHz, rawLook, W, h, s, null, false);
+      const raw = { face: rawFace, front: labelled(rawFace, hz.name, s, h), plan: paintFace(rawHz, rawLook, W, T, s / 2, null, true) };
+      const fin = { face: faces[i], front: m.material[4].map.image, plan: m.material[2].map.image };
+      const blank = (src) => Object.assign(document.createElement("canvas"), { width: src.width, height: src.height });
+      const out = { face: blank(fin.face), front: blank(fin.front), plan: blank(fin.plan) };
+      const side = T / W;
+      const texs = [tex(out.face, side, 1 - side), tex(out.face, side, 0), tex(out.plan), tex(out.plan), tex(out.front), tex(out.face)];
+      m.userData.mix = { raw, fin, out, texs, finals: m.material.map((mat) => mat.map), drawn: -1 };
+    });
+  }
+  function drawMix(m, t) {
+    const x = m.userData.mix;
+    ["face", "front", "plan"].forEach((k) => {
+      const ctx = x.out[k].getContext("2d");
+      ctx.globalAlpha = 1;
+      ctx.drawImage(x.raw[k], 0, 0, x.out[k].width, x.out[k].height);
+      if (t > 0) { ctx.globalAlpha = t; ctx.drawImage(x.fin[k], 0, 0, x.out[k].width, x.out[k].height); }
+      ctx.globalAlpha = 1;
+    });
+    x.texs.forEach((tx) => { tx.needsUpdate = true; });
+    x.drawn = t;
+  }
+  function useHistoryMaps(on) {
+    slabs.forEach((m) => m.material.forEach((mat, j) => {
+      mat.map = on ? m.userData.mix.texs[j] : m.userData.mix.finals[j];
+      mat.needsUpdate = true;
+    }));
+  }
+  function place(m) {
+    const u = m.userData, n = u.now, grow = Math.max(0.001, n.grow);
+    m.visible = n.grow > 0.002;
+    m.scale.y = grow;
+    m.position.set(0, u.y - u.h / 2 + (u.h * grow) / 2 + n.off, n.lift);
+  }
+
+  // Horizon names in history.txt, matched like the OSD ("Agb" finds "Agb1"); "all" means every horizon.
+  function horizonsNamed(list) {
+    if (list.some((n) => n.toLowerCase() === "all")) return hzs.map((h) => h.name);
+    const bare = (k) => k.toLowerCase().replace(/\d+$/, "");
+    return list.map((n) => {
+      const exact = hzs.find((h) => h.name.toLowerCase() === n.toLowerCase());
+      if (exact) return exact.name;
+      const close = hzs.filter((h) => bare(h.name) === bare(n));
+      return close.length === 1 ? close[0].name : null;
+    }).filter(Boolean);
+  }
+  const laidDown = new Set(history.flatMap((st) => horizonsNamed(st.deposit)));
+  function stateAt(k) {
+    const grow = {}, mixes = {};
+    hzs.forEach((h) => { grow[h.name] = laidDown.has(h.name) ? 0 : 1; mixes[h.name] = 0; });
+    history.slice(0, k + 1).forEach((st) => {
+      horizonsNamed(st.deposit).forEach((n) => { grow[n] = 1; });
+      horizonsNamed(st.develop).forEach((n) => { mixes[n] = Math.max(mixes[n], 0.55); });
+      horizonsNamed(st.finish).forEach((n) => { mixes[n] = 1; });
+    });
+    if (k === history.length - 1) hzs.forEach((h) => { grow[h.name] = 1; mixes[h.name] = 1; });   // the last stage is today
+    return { grow, mixes };
+  }
+
+  // Stages sit evenly along the timeline: the ages span 280 million years to today, so a
+  // true scale would bunch them up. Each stage's own date is written in the caption.
+  const along = (i) => (history.length > 1 ? i / (history.length - 1) : 1);
+  function buildPanel() {
+    panel.innerHTML =
+      '<p class="history-when"><span data-count></span> <span data-when></span></p>' +
+      '<h3 data-title tabindex="-1"></h3><p class="history-text" data-text></p><p class="history-source" data-source></p>' +
+      '<div class="timeline"><div class="track"></div><div class="ticks" role="group" aria-label="Stages"></div>' +
+      '<span class="end start">Oldest</span><span class="end now">Today</span></div>' +
+      '<div class="history-controls">' +
+      '<button type="button" data-prev>Back</button><button type="button" data-play>Pause</button><button type="button" data-next>Next</button>' +
+      "</div>";
+    const ticks = panel.querySelector(".ticks");
+    history.forEach((st, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.style.left = (along(i) * 100).toFixed(2) + "%";
+      b.setAttribute("aria-label", "Stage " + (i + 1) + ": " + st.title);
+      b.title = st.title + (st.when ? " (" + st.when + ")" : "");
+      b.addEventListener("click", () => { stop(); applyStage(i); });
+      ticks.appendChild(b);
+    });
+    panel.querySelector("[data-prev]").addEventListener("click", () => { stop(); applyStage(Math.max(0, stageIndex - 1)); });
+    panel.querySelector("[data-next]").addEventListener("click", () => { stop(); applyStage(Math.min(history.length - 1, stageIndex + 1)); });
+    panel.querySelector("[data-play]").addEventListener("click", () => {
+      if (playing) return stop();
+      if (stageIndex === history.length - 1) applyStage(0);
+      play();
+    });
+  }
+  function showStage() {
+    const st = history[stageIndex];
+    panel.querySelector("[data-count]").textContent = "Stage " + (stageIndex + 1) + " of " + history.length + " ·";
+    panel.querySelector("[data-when]").textContent = st.when;
+    panel.querySelector("[data-title]").textContent = st.title;
+    panel.querySelector("[data-text]").textContent = st.text;
+    panel.querySelector("[data-source]").textContent = st.source ? "Source: " + st.source : "";
+    panel.querySelectorAll(".ticks button").forEach((b, i) => {
+      b.classList.toggle("is-on", i === stageIndex);
+      b.classList.toggle("is-past", i < stageIndex);
+    });
+    panel.querySelector(".track").style.setProperty("--done", (along(stageIndex) * 100).toFixed(2) + "%");
+    panel.querySelector("[data-prev]").disabled = stageIndex === 0;
+    panel.querySelector("[data-next]").disabled = stageIndex === history.length - 1;
+    panel.querySelector("[data-play]").textContent = playing ? "Pause" : stageIndex === history.length - 1 ? "Replay" : "Play";
+  }
+  function applyStage(k) {
+    stageIndex = k;
+    const { grow, mixes } = stateAt(k);
+    slabs.forEach((m) => { m.userData.goal.grow = grow[m.userData.name]; m.userData.goal.mix = mixes[m.userData.name]; });
+    showStage();
+    dirty = true;
+  }
+  function stop() {
+    playing = false;
+    clearTimeout(timer);
+    if (historyOn) showStage();
+  }
+  function play() {
+    playing = true;
+    showStage();
+    const words = history[stageIndex].text.split(/\s+/).length;
+    timer = setTimeout(() => {
+      if (!historyOn || !playing) return;
+      if (stageIndex >= history.length - 1) return stop();
+      applyStage(stageIndex + 1);
+      play();
+    }, Math.min(11000, 2800 + words * 60));
+  }
+  function enterHistory() {
+    prepareHistory();
+    historyOn = true;
+    select(null, false);
+    if (exploded) { setExploded(false); explodeBtn.setAttribute("aria-pressed", "false"); }
+    explodeBtn.disabled = true;
+    useHistoryMaps(true);
+    ghost.visible = true;
+    if (!panel.firstChild) buildPanel();
+    panel.hidden = false;
+    card.hidden = true;
+    applyStage(0);
+    // Jump straight to the first stage, then play forward from there.
+    slabs.forEach((m) => {
+      const n = m.userData.now, g = m.userData.goal;
+      n.grow = g.grow;
+      n.mix = g.mix;
+      drawMix(m, n.mix);
+      place(m);
+    });
+    historyBtn.textContent = "Back to today";
+    historyBtn.setAttribute("aria-pressed", "true");
+    panel.querySelector("[data-title]").focus({ preventScroll: true });
+    if (reduceMotion.matches) showStage(); else play();
+  }
+  function exitHistory() {
+    stop();
+    historyOn = false;
+    slabs.forEach((m) => {
+      const n = m.userData.now, g = m.userData.goal;
+      n.grow = g.grow = 1;
+      n.mix = g.mix = 1;
+      place(m);
+    });
+    useHistoryMaps(false);
+    ghost.visible = false;
+    panel.hidden = true;
+    card.hidden = false;
+    explodeBtn.disabled = false;
+    historyBtn.textContent = "Play its history";
+    historyBtn.setAttribute("aria-pressed", "false");
+    dirty = true;
+  }
+
   /* animation */
   const settle = (now, goal, k) => (Math.abs(goal - now) < 0.01 ? goal : now + (goal - now) * k);
   function step(dt) {
     const k = reduceMotion.matches ? 1 : 1 - Math.exp(-dt * 9);
+    const kGrow = reduceMotion.matches ? 1 : 1 - Math.exp(-dt * 2.6);
+    const kMix = reduceMotion.matches ? 1 : 1 - Math.exp(-dt * 1.8);
     let busy = false;
     slabs.forEach((m) => {
       const u = m.userData, n = u.now, g = u.goal;
-      if (n.lift === g.lift && n.off === g.off && n.dim === g.dim) return;
+      if (n.lift === g.lift && n.off === g.off && n.dim === g.dim && n.grow === g.grow && n.mix === g.mix) return;
       n.lift = settle(n.lift, g.lift, k);
       n.off = settle(n.off, g.off, k);
       n.dim = settle(n.dim, g.dim, k);
-      m.position.set(0, u.y + n.off, n.lift);
+      n.grow = settle(n.grow, g.grow, kGrow);
+      if (n.mix !== g.mix) {
+        n.mix = settle(n.mix, g.mix, kMix);
+        // Repainting is the costly part, so only when the blend has visibly moved.
+        if (u.mix && (Math.abs(n.mix - u.mix.drawn) > 0.08 || n.mix === g.mix)) drawMix(m, n.mix);
+      }
+      place(m);
       m.material.forEach((mat) => { mat.color.copy(mat.userData.base).multiplyScalar(n.dim); });
       busy = true;
     });
@@ -1022,17 +1278,27 @@ async function buildModel(section, soil, table, osd, page, pending) {
     if (!e.isPrimary || !down) return;
     const tap = Math.hypot(e.clientX - down.x, e.clientY - down.y) < 6 && e.timeStamp - down.t < 600;
     down = null;
-    if (!tap) return;
+    if (!tap || historyOn) return;
     const name = hit(e);
     select(name && name === selected ? null : name, false);
   });
   canvas.addEventListener("pointermove", (e) => {
     if (e.pointerType === "mouse" && !e.buttons) canvas.style.cursor = hit(e) ? "pointer" : "grab";
   });
-  document.addEventListener("soil:pick", (e) => select(e.detail, true));
+  document.addEventListener("soil:pick", (e) => { if (!historyOn) select(e.detail, true); });
 
   /* buttons */
   const explodeBtn = section.querySelector("[data-explode]");
+  let historyBtn = null;
+  if (history.length && panel) {
+    historyBtn = document.createElement("button");
+    historyBtn.type = "button";
+    historyBtn.className = "history-btn";
+    historyBtn.textContent = "Play its history";
+    historyBtn.setAttribute("aria-pressed", "false");
+    historyBtn.addEventListener("click", () => (historyOn ? exitHistory() : enterHistory()));
+    section.querySelector(".bar").prepend(historyBtn);
+  }
   const spinBtn = section.querySelector("[data-spin]");
   explodeBtn.addEventListener("click", () => {
     setExploded(!exploded);
@@ -1060,6 +1326,8 @@ async function buildModel(section, soil, table, osd, page, pending) {
   select(pending.name, true);
   section.classList.add("is-ready");
   run();
+  // Paint the history's raw-material textures while the browser is idle, so the button responds at once.
+  if (historyBtn) (window.requestIdleCallback || ((f) => setTimeout(f, 1500)))(() => prepareHistory());
 }
 
 /* ---------- start ---------- */
@@ -1078,15 +1346,20 @@ pageReady().then(async (page) => {
     .then((r) => (r.ok ? r.text() : ""))
     .catch(() => "");
   const osd = parseOSD(osdText);
+  // The optional history.txt: the stages played by "Play its history".
+  const historyText = await fetch("content/" + folder + "/history.txt", { cache: "no-cache" })
+    .then((r) => (r.ok ? r.text() : ""))
+    .catch(() => "");
+  const history = parseHistory(historyText);
   const table = readTable();
-  const section = buildSection(soil, table, soil.horizons.some((hz) => osdFor(osd, hz.name)));
+  const section = buildSection(soil, table, soil.horizons.some((hz) => osdFor(osd, hz.name)), history);
   fillCard(section.querySelector("[data-card]"), soil, table, osd, null);
 
   // Fetch Three.js only when the model is about to scroll into view.
   const watch = new IntersectionObserver((entries) => {
     if (!entries[0].isIntersecting) return;
     watch.disconnect();
-    buildModel(section, soil, table, osd, page, pending)
+    buildModel(section, soil, table, osd, history, page, pending)
       .catch((err) => {
         console.warn("3D soil model could not load:", err);
         section.remove();

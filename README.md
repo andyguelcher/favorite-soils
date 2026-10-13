@@ -21,6 +21,7 @@ Andy will tell you which one is yours. Stay inside it and you can't break anyone
 |`blog-1.md`|Blog post 1: plant-available water.|
 |`blog-2.md`|Blog post 2: annual water budget.|
 |`osd.txt`|Optional. Your soil's official series description, pasted in. It makes the 3D model look like the description.|
+|`history.txt`|The stages played by "Play its history" on your 3D model, researched for you. You don't need to edit it; it's plain text if you want to reword a caption.|
 
 ## How to edit a file
 
