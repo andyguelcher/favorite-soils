@@ -95,6 +95,11 @@ const codeIn = (text, dict) => (readCodes(text, dict)[0] || {}).code || null;
 const EMPTY_CELL = /^\s*(n\/?a|n\/l|-+|—|not given|not listed|not recorded)\s*$/i;
 function spell(raw, dict) {
   if (!raw || EMPTY_CELL.test(raw)) return "";
+  // A mixed horizon's cell ("E: l/fsl B: l, scl, cl"): spell each labelled part on its own.
+  const parts = raw.split(/\s+(?=[A-Z][A-Za-z/]{0,3}:\s)/);
+  if (parts.length > 1 && parts.every((p) => /^[A-Z][A-Za-z/]{0,3}:\s/.test(p))) {
+    return parts.map((p) => p.replace(/^([^:]+:)\s*(.*)$/, (m, label, rest) => label + " " + spell(rest, dict))).join("; ");
+  }
   const found = readCodes(raw, dict);
   if (!found.length) return raw + " (code not recognised)";
   const labels = found.map((f) => f.label).join(", ");
@@ -128,7 +133,8 @@ function readTable() {
     const heads = [...tr.closest("table").querySelectorAll("thead th")].map((th) => th.textContent.toLowerCase());
     const col = (re) => {
       const k = heads.findIndex((h) => re.test(h));
-      return k > -1 && tr.children[k] ? tr.children[k].textContent.trim() : "";
+      // innerText keeps the line break between the parts of a mixed horizon ("E: ..." / "B: ...") as a space.
+      return k > -1 && tr.children[k] ? tr.children[k].innerText.replace(/\s*\n\s*/g, " ").trim() : "";
     };
     if (rows[tr.dataset.hz]) return;
     rows[tr.dataset.hz] = {
@@ -238,6 +244,16 @@ function readHorizon(text) {
     const m = first.match(new RegExp("\\b" + n + "\\b"));
     if (m && m.index < at) { at = m.index; o.texture = code; }
   });
+  // A combination horizon (E/B) is described as separate parts: "(65 percent E), ... (5YR 4/4) moist,
+  // and (35 percent B), ... (2.5YR 3/6) moist". Keep each part's share and moist colour.
+  const marks = [...(clauses[0] || "").matchAll(/\((\d+(?:\.\d+)?)\s*percent\s+([A-Z][A-Za-z]*)\)/g)];
+  if (marks.length > 1) {
+    o.parts = marks.map((m, i) => {
+      const seg = clauses[0].slice(m.index + m[0].length, i + 1 < marks.length ? marks[i + 1].index : undefined);
+      const moist = seg.match(/\(([^)]*\/[^)]*)\)\s*moist/i);
+      return { label: m[2], pct: parseFloat(m[1]), color: moist ? munsellsIn("(" + moist[1] + ")")[0] : munsellsIn(seg)[0] };
+    }).filter((p) => p.color);
+  }
   const modifier = first.match(/\b(very |extremely )?(gravelly|cobbly|channery|stony)\b/);
   if (modifier) {
     o.rocks = modifier[1] ? 45 : 22;
@@ -343,7 +359,10 @@ function parseHistory(text) {
 function lookFor(hz, row, osd) {
   if (!row && !osd) return null;
   const parts = nameParts(hz.name), has = (x) => parts.suffix.includes(x);
-  const L = { texture: null, structures: [], partings: false, rocks: 0, fragments: [], roots: null, features: [], boundary: null, dense: false };
+  const L = { texture: null, structures: [], partings: false, rocks: 0, fragments: [], roots: null, features: [], boundary: null, dense: false, parts: null };
+  // Without an OSD, an E/B-style horizon with two colours in soil.txt is drawn as 65% / 35% (the first letter dominates).
+  const colours = (hz.munsell || "").match(/\d+(?:\.\d+)?\s*(?:YR|GY|BG|PB|RP|R|Y|G|B|P)\s+\d+(?:\.\d+)?\s*\/\s*\d+(?:\.\d+)?/gi) || [];
+  if (hz.name.includes("/") && colours.length > 1) L.parts = [{ pct: 65, color: colours[0] }, { pct: 35, color: colours[1] }];
   if (row) {
     L.texture = codeIn(row.texture, TEXTURES);
     // "pris/sbk" reads as prismatic parting to subangular blocky.
@@ -359,6 +378,7 @@ function lookFor(hz, row, osd) {
     L.roots = osd.roots || null;
     L.features = osd.features.map((f) => ({ ...f, colors: f.colors.map((c) => rgbOf(window.soilColor(c))) }));
     L.boundary = osd.boundary || null;
+    if (osd.parts && osd.parts.length > 1) L.parts = osd.parts;
     return L;
   }
   if (parts.master.startsWith("A")) L.roots = { per: 0.4, width: 0.08 };
@@ -510,6 +530,25 @@ function paintFace(hz, look, wcm, hcm, s, below, plan) {
       for (let y = 0; y <= h + s; y += 2 * s) pts.push([x + Math.sin(y / (11 * s)) * 0.6 * s, y]);
       cracks.push({ pts: jitterLine(pts, 0.3 * s), weight: 0.5, width: 0.07, vertical: true });
     }
+  }
+
+  // A combination horizon: distinct bodies of the minor part(s) (the B in E/B) within the main one,
+  // drawn over the peds and under the cracks.
+  if (look.parts) {
+    look.parts.slice(1).forEach((part) => {
+      const c = rgbOf(window.soilColor(part.color));
+      // Each body is a cluster of overlapping ellipses about 18 cm² in area; enough of them to cover the stated share.
+      const n = Math.min(400, Math.round((part.pct / 100) * wcm * hcm / 18));
+      for (let i = 0; i < n; i++) {
+        const x = r() * w, y = r() * h, body = shade(c, (r() - 0.5) * 0.12);
+        ctx.fillStyle = css(body);
+        for (let k = 0; k < 4; k++) {
+          ctx.beginPath();
+          ctx.ellipse(x + (r() - 0.5) * 3 * s, y + (r() - 0.5) * 2 * s, (1.2 + r() * 1.8) * s, (0.9 + r() * 1.2) * s, r() * Math.PI, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    });
   }
 
   // Features in the matrix: iron masses and depletions, in their own Munsell colours.
@@ -800,10 +839,14 @@ function fillCard(card, soil, table, osd, name) {
     const dt = document.createElement("dt"), dd = document.createElement("dd");
     dt.textContent = k;
     if (k === "Colour") {
-      const chip = document.createElement("span");
-      chip.className = "chip";
-      chip.style.background = hz.color;
-      dd.appendChild(chip);
+      // One chip per colour, so an E/B shows both its parts.
+      const all = (hz.munsell || "").match(/\d+(?:\.\d+)?\s*(?:YR|GY|BG|PB|RP|R|Y|G|B|P)\s+\d+(?:\.\d+)?\s*\/\s*\d+(?:\.\d+)?|N\s*\d+(?:\.\d+)?\s*\//gi) || [hz.munsell];
+      all.forEach((m) => {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        chip.style.background = all.length > 1 ? window.soilColor(m) : hz.color;
+        dd.appendChild(chip);
+      });
     }
     dd.appendChild(document.createTextNode(v));
     dl.append(dt, dd);
