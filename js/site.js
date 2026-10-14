@@ -105,6 +105,25 @@
   function cells(line) {
     return line.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map(function (c) { return c.trim(); });
   }
+  // A table cell: a colour chip before every Munsell colour in it, and a mixed horizon written
+  // as labelled parts ("E: 5YR 4/4 B: 2.5YR 3/6") shown one part per line.
+  var MUNSELL = /(\d+(?:\.\d+)?\s*(?:YR|GY|BG|PB|RP|Y|R|G|B|P)\s+\d+(?:\.\d+)?\s*\/\s*\d+(?:\.\d+)?|\bN\s*\d+(?:\.\d+)?\s*\/)/i;
+  function withChips(text) {
+    return text.split(MUNSELL).map(function (piece, i) {
+      return i % 2 ? '<span class="chip" style="background:' + soilColor(piece) + '"></span>' + inline(piece) : inline(piece);
+    }).join("");
+  }
+  function tableCell(c) {
+    var parts = c.split(/\s+(?=[A-Z][A-Za-z\/]{0,3}:\s)/);
+    if (parts.length > 1 && parts.every(function (p) { return /^[A-Z][A-Za-z\/]{0,3}:\s/.test(p); })) {
+      return parts.map(function (p) {
+        var m = p.match(/^([^:]+:)\s*(.*)$/);
+        return '<span class="part"><b>' + esc(m[1]) + "</b> " + withChips(m[2]) + "</span>";
+      }).join("<br>");
+    }
+    return withChips(c);
+  }
+
   function md(text, base, horizonNames) {
     var lines = text.replace(/\r/g, "").split("\n");
     var out = [], i = 0, open = false;
@@ -149,9 +168,7 @@
           var hz = horizonNames.indexOf(r[0]) > -1 ? ' data-hz="' + esc(r[0]) + '"' : "";
           t += "<tr" + hz + ">";
           r.forEach(function (c, k) {
-            var chip = /^(\d+(\.\d+)?\s*(YR|GY|BG|PB|RP|Y|R|G|B|P)\s+\d+(\.\d+)?\s*\/\s*\d+|N\s*\d+(\.\d+)?\s*\/)/i.test(c)
-              ? '<span class="chip" style="background:' + soilColor(c) + '"></span>' : "";
-            t += (k === 0 ? '<th scope="row">' : "<td>") + chip + inline(c) + (k === 0 ? "</th>" : "</td>");
+            t += (k === 0 ? '<th scope="row">' : "<td>") + tableCell(c) + (k === 0 ? "</th>" : "</td>");
           });
           t += "</tr>";
         });

@@ -177,6 +177,7 @@ table.drocts tbody tr { border-top: 1px solid var(--rule); transition: backgroun
 table.drocts tbody tr:first-child { border-top: 0; }
 table.drocts tbody th { font-weight: 500; }
 table.drocts tbody tr:hover, table.drocts tbody tr.is-on { background: var(--water-wash); }
+table.drocts .part b { font-weight: 600; color: var(--ink-soft); }   /* "E:" / "B:" in a mixed horizon */
 .chip { display: inline-block; width: 0.8rem; height: 0.8rem; margin-right: 0.45rem; border: 1px solid var(--line); vertical-align: -0.08em; }
 .notes { font-family: var(--label); font-size: 0.8125rem; line-height: 1.55; color: var(--ink-soft); max-width: var(--measure); }
 .notes p { margin-bottom: 0.4em; }

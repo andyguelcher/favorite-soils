@@ -16,7 +16,7 @@
 | Oi |	0-2	|	Not Given |	p	| -	| ne | 5.6 |
 | A	| 2-4	| 6%	| 5YR 3/3	| l/fsl	| pl/gr	| ne	| 7.2 |
 | E	| 4-11	| 6% |	5YR 3/4 |	l/fsil |	sbk/gr |	ne	| 7.0 |
-| E/B	| 11-21	| 8% | 5YR 4/4 B: 2.5YR 3/6 | l/fsl B: l, sicl, cl |	sbk/gr |	ne	| 6.8 |
+| E/B	| 11-21	| 8% | E: 5YR 4/4 B: 2.5YR 3/6 |	E: l/fsl B: l, sicl, cl |	sbk/gr |	ne	| 6.8 |
 | Bt1	| 21-34	| 14%	| 2.5YR 3/6	| cl	| pris/sbk | ne	| 6.8 |
 | Bt2	| 34-44	| 21%	| 2.5YR 4/6	| gr/cl	| pris/sbk	| ne | 6.6 |
 | BC	| 44-62	| 14%	| 2.5YR 4/6	| cl	| sbk/gr	| ne	| 6.6 |
