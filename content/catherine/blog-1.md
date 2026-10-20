@@ -3,7 +3,7 @@
 By Katherine Kovich on October 19, 2026
 
 
-![Katherine Kovich Calculated PAW for Mountwow Soil Series](MountwowPAW.jpg)
+![Katherine Kovich Calculated PAW for Mountwow Soil Series](MountwowPAW.jpeg)
 
 PAW was calculated using the CDM Soil Hydraulic Properties Calculator which displays an estimated Field Capacity, Wilting Percentage, and Soil Bulk Density based on each horizon's percent sand and clay. Once these fields were calculated, I calculated PAW using the formula, PAW=FC-WP for each horizon. These values were each multiplied by the horizon's soil density and thickness. The sum of these values is the total PAW length of Mountwow. The PAW % was calculated by dividing the total PAW length by the total thickness of the root horizons, multiplied by 100.
 
