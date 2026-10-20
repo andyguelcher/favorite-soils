@@ -9,7 +9,13 @@ In the root zone of the Weminuche soil series, there is approximately 16.9 cm of
 Organic matter increases plant available water directly by possessing a high capacity for water-holding as a material, and also indirectly by affecting pore space and soil structure (Brady and Weil, 200). This means the Oi layer of the Weminuche soil likely has more PAW than is calculated here. Additionally, none of the layers in the Weminuche soil series have a high percentage of rocks, the coarseness of which decreases plant available water (Brady and Weil, 199). This probably also increases its PAW.
 
 
-Source: Brady, N. C., & Weil, R. R. (2009). Elements of the nature and properties of soils (4th ed.). W. Ross MacDonald School, Resource Services Library.
+Sources: 
+
+Brady, N. C., & Weil, R. R. (2009). Elements of the nature and properties of soils (4th ed.). W. Ross MacDonald School, Resource Services Library.
+
+CDM Smith. (n.d.). Soil Hydraulic Properties Calculator. http://www.dynsystem.com/netstorm/soilwater.html 
+
+Soil data explorer - weminuche. Soil Data Explorer | California Soil Resource Lab. (n.d.). https://casoilresource.lawr.ucdavis.edu/sde/?series=weminuche#osd 
 
 
 
