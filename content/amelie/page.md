@@ -41,9 +41,9 @@ Structure: pl = platy, gr = granular, sbk = subangular blocky, pris = prismatic
 ![Andy's Drocts+ Table](Drocts%2BAndysScreenshot.jpg)
 
 
-## Annual water budget, compared
+## Annual water budget of Weminuche and Mountwow, compared
 
-TO DO: Compare this soil's water balance with one groupmate's. Say which of surplus, use, recharge and deficit each soil has and how much, and explain why they differ.
+The Weminuche and Mountwow soil series both begin the year in a surplus with regards to their annual water budget, although where they start differs considerably (at 60 mm of water for Weminuche, at 370 mm of water for Mountwow). Both have a use period in the middle of the year, although the use period for Weminuche is longer, three months to Mountwow’s one. Knowing these facts, it is unsurprising that the Weminuche soil series goes into deficit during the year while the Mountwow soil does not. In a single year, Mountwow moves from surplus (6 months) to recharge (1 month) to use (1 month) and then back to recharge (1 month) and surplus again (3 months). The Weminuche series has an annual cycle of surplus (5 months), use (3 months), deficit (1 month), and recharge (2 months) before returning to surplus (1 month). 
 
 ## Second comparison
 
