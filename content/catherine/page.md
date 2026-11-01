@@ -49,13 +49,13 @@ Structure: sbk, subangular blocky.
 4. Vegetation grows and accumulates into the Oi horizon
 
 
-## Annual water budget, compared
+## Annual water budget: A comparison between Mountwow and Wauseon
 
-TO DO: Compare this soil's water balance with one groupmate's. Say which of surplus, use, recharge and deficit each soil has and how much, and explain why they differ.
+The water budget for the Wauseon soil series begins in a surplus with the precipitation averaging about 55mm and the evapotranspiration being around 4mm in January. The water budget went into a use phase in July where the evapotranspiration became greater than the monthly precipitation with 116mm of evapotranspiration, while only 102mm of precipitation for the month. Wauseon then went into a recharge phase from August through October where precipitation surpassed evapotranspiration again. This trend continued even more so in November and December when the water budget crossed into a surplus once again. The water budget for Mountwow had a similar pattern to the Wauseon series. The main difference was Mountwow has a much longer period in the surplus zone compared to Wauseon. The water budget for Mountwow began in a surplus zone with 370mm of precipitation and about 4mm of evapotranspiration. This period of surplus lasted until June where it entered a short recharge phase, with only a small difference between precipitation and evapotranspiration. The soil series went into a use phase in July, similar to Wauseon, where evapotranspiration was 55mm and precipitation was only 40mm. This again, only lasted for one month until a recharge phase was reached from August to September, and precipitation overcame evapotranspiration. Similar to the Wauseon series, a period of surplus followed. However, Mountwow had a longer period of surplus at the end of the year, lasting from September to December where precipitation reached up to 380mm in November from the large amounts of snowfall on the volcano. 
 
-## Second comparison
+## Plant Availabe Water between Mountwow and Wauseon
 
-TO DO: The group picks one: plant-available water, physical properties and water holding, wind and water erosion, role in the hydrologic cycle, or land use and management.
+The plant available water for the Wauseon soil series is 11.8cm in the root zone. This comes across as 16.6% PAW across 71cm of roots. The plant available water for the Mountwow soil series is 30.5cm in the root zone. This comes across as 20.61% across 150cm of roots. The main difference between the two series is the depth that each root zone extends to. The measured Wauseon series extends to 200cm below the surface, but the root zone only extends down to 71cm, less than half of the total series length. The measured Mountwow series extends to 150cm and contains roots in all horizons. I believe this is due to the fact that there are multiple buried horizons in this series with lots of vegetation cover on the surface. Even though the two series have different plant available water lengths, it is distributed over different soil depths, which makes the total % plant available water between the two series so close, Wauseon’s 16.6% PAW compared to Mountwow’s 20.61%. 
 
 ## Sources
 
