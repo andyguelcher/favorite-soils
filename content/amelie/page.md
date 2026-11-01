@@ -45,7 +45,7 @@ Structure: pl = platy, gr = granular, sbk = subangular blocky, pris = prismatic
 
 The Weminuche and Mountwow soil series both begin the year in a surplus with regards to their annual water budget, although where they start differs considerably (at 60 mm of water for Weminuche, at 370 mm of water for Mountwow). Both have a use period in the middle of the year, although the use period for Weminuche is longer, three months to Mountwow’s one. Knowing these facts, it is unsurprising that the Weminuche soil series goes into deficit during the year while the Mountwow soil does not. In a single year, Mountwow moves from surplus (6 months) to recharge (1 month) to use (1 month) and then back to recharge (1 month) and surplus again (3 months). The Weminuche series has an annual cycle of surplus (5 months), use (3 months), deficit (1 month), and recharge (2 months) before returning to surplus (1 month). 
 
-## Second comparison
+## PAW in Weminuche and Wauseon
 
 
 With regards to plant-available water, both the Weminuche soil series and the Wauseon soil series benefit from the presence of organic matter and a lack of rocks, meaning their PAW is likely higher than calculated. However, the calculator does not take organic matter into account, and although the Wauseon soil series is calculated to hold around 11.8 cm of water while the Weminuche soil is calculated to hold around 16.9 cm of water, I believe that as a mollisol the Wauseon soil’s organic matter would have a significant effect upon its plant-available water which the alfisol Weminuche lacks. I think it is very likely that in reality, the Wauseon soil series would have more plant-available water than the Weminuche soil series. 
