@@ -47,7 +47,9 @@ The Weminuche and Mountwow soil series both begin the year in a surplus with reg
 
 ## Second comparison
 
-TO DO: The group picks one: plant-available water, physical properties and water holding, wind and water erosion, role in the hydrologic cycle, or land use and management.
+
+With regards to plant-available water, both the Weminuche soil series and the Wauseon soil series benefit from the presence of organic matter and a lack of rocks, meaning their PAW is likely higher than calculated. However, the calculator does not take organic matter into account, and although the Wauseon soil series is calculated to hold around 11.8 cm of water while the Weminuche soil is calculated to hold around 16.9 cm of water, I believe that as a mollisol the Wauseon soil’s organic matter would have a significant effect upon its plant-available water which the alfisol Weminuche lacks. I think it is very likely that in reality, the Wauseon soil series would have more plant-available water than the Weminuche soil series. 
+
 
 ## Sources
 
