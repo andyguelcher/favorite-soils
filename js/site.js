@@ -269,11 +269,13 @@
     });
   }));
 
-  // Menu labels follow the series names.
+  // Menu labels are each member's first name; hovering shows the soil series and full name.
   soilsReady.then(function (soils) {
     soils.forEach(function (soil) {
+      var first = soil.name ? soil.name.split(/\s+/)[0] : "";
       document.querySelectorAll('.masthead nav a[href="' + soil.person.page + '"]').forEach(function (a) {
-        a.textContent = soil.title;
+        a.textContent = first || soil.title;
+        a.title = soil.series ? soil.series + " soil" + (soil.name ? " (" + soil.name + ")" : "") : "";
       });
     });
   });
@@ -343,7 +345,7 @@
       var soil = res[0].filter(function (s) { return s.person.folder === folder; })[0];
       var names = soil.horizons.map(function (h) { return h.name; });
 
-      document.title = soil.title + " | Favorite Soils Report";
+      document.title = (soil.name ? soil.name + ": " : "") + soil.title + " | Favorite Soils Report";
       document.querySelector("[data-title]").textContent = soil.title;
       document.querySelector("[data-lede]").textContent = soil.name
         ? soil.name + "'s favorite soil. " + soil.summary
